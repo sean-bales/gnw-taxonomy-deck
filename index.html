@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GNW Taxonomy Migration</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Reveal.js Core CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.2.1/reset.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.2.1/reveal.min.css">
+
+  <style>
+    /* ===== THEME VARIABLES ===== */
+    :root {
+      --bg-deep: #0a0a09;
+      --bg-dark: #0f0f0e;
+      --bg-dark-alt: #161614;
+      --bg-card: #1c1c1a;
+      --bg-card-hover: #222220;
+      --bg-code: #0d0d0c;
+      --text-primary: #ede8df;
+      --text-secondary: #c8c2b6;
+      --text-muted: #7d7870;
+      --accent: #d4a853;
+      --accent-soft: rgba(212, 168, 83, 0.10);
+      --accent-glow: rgba(212, 168, 83, 0.04);
+      --accent-secondary: #cf5c5c;
+      --accent-secondary-soft: rgba(207, 92, 92, 0.10);
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-body: 'Outfit', system-ui, sans-serif;
+      --font-mono: 'Consolas', 'Monaco', monospace;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
+      --border-subtle: rgba(255, 255, 255, 0.05);
+      --divider: rgba(255, 255, 255, 0.07);
+      --radius: 8px;
+    }
+
+    /* ===== GRAIN OVERLAY ===== */
+    .reveal::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0.028;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 200px;
+    }
+
+    /* ===== GLOBAL RESETS & BASE ===== */
+    .reveal {
+      font-family: var(--font-body);
+      color: var(--text-primary);
+      font-size: 1rem;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    .reveal .slides {
+      text-align: left;
+    }
+
+    .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+      font-family: var(--font-display);
+      font-weight: 600;
+      line-height: 1.15;
+      margin: 0 0 0.5em 0;
+      text-wrap: balance;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .reveal h1 { font-size: clamp(2.4rem, 4.5vw, 3.4rem); font-weight: 700; }
+    .reveal h2 { font-size: clamp(1.6rem, 3vw, 2.1rem); }
+    .reveal h3 { font-size: clamp(1.1rem, 1.8vw, 1.35rem); }
+
+    .reveal p {
+      margin: 0 0 0.75em 0;
+      color: var(--text-secondary);
+    }
+
+    .reveal ul, .reveal ol {
+      margin: 0 0 1em 0;
+      padding-left: 1.5em;
+      text-align: left;
+    }
+
+    .reveal li {
+      margin-bottom: 0.5em;
+      line-height: 1.55;
+      color: var(--text-secondary);
+    }
+
+    .reveal strong {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .reveal em {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .reveal a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(212, 168, 83, 0.3);
+    }
+
+    /* ===== SLIDE BACKGROUNDS ===== */
+    .reveal .slides section {
+      padding: 0;
+      height: 100%;
+      box-sizing: border-box;
+      background: linear-gradient(168deg, var(--bg-dark) 0%, var(--bg-deep) 60%, #0e0d08 100%);
+    }
+
+    /* ===== SLIDE LAYOUT BASE ===== */
+    .slide-layout {
+      width: 100%;
+      height: 100%;
+      padding: 3.5rem 4.5rem 2.5rem;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .slide-header {
+      flex-shrink: 0;
+      margin-bottom: 2rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .slide-header h2 {
+      text-align: left;
+      margin: 0;
+    }
+
+    .slide-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .slide-takeaway {
+      flex-shrink: 0;
+      margin-top: auto;
+      padding-top: 1rem;
+      font-family: var(--font-display);
+      font-style: italic;
+      color: var(--accent);
+      font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+      text-align: right;
+      border-top: 1px solid var(--divider);
+      font-weight: 400;
+      opacity: 0.9;
+    }
+
+    /* ===== DIAGRAM SLIDE ===== */
+    .diagram-slide {
+      justify-content: center;
+      align-items: center;
+    }
+
+    .diagram-slide .diagram-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+    }
+
+    .diagram-slide svg {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    /* ===== CONTENT SLIDE ===== */
+    .content-slide .slide-body {
+      text-align: left;
+      font-size: clamp(0.92rem, 1.4vw, 1.1rem);
+    }
+
+    .content-slide .slide-body ul,
+    .content-slide .slide-body ol {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .content-slide .slide-body li {
+      padding-left: 1.75em;
+      position: relative;
+      margin-bottom: 1em;
+    }
+
+    .content-slide .slide-body li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.5em;
+      width: 6px;
+      height: 6px;
+      border-radius: 1px;
+      background: var(--accent);
+      transform: rotate(45deg);
+    }
+
+    /* ===== TWO-COLUMN SLIDE ===== */
+    .two-column-slide .slide-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      flex: 1;
+      align-content: center;
+    }
+
+    .two-column-slide .col {
+      text-align: left;
+      font-size: clamp(0.88rem, 1.3vw, 1.02rem);
+    }
+
+    .two-column-slide .col-label {
+      font-family: var(--font-body);
+      font-weight: 600;
+      color: var(--accent);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 2px solid var(--accent);
+    }
+
+    /* ===== CARD GRID SLIDE ===== */
+    .card-grid-slide .card-row {
+      display: grid;
+      grid-template-columns: repeat(var(--card-count, 3), 1fr);
+      gap: 1.25rem;
+      flex: 1;
+      align-content: center;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent);
+      position: relative;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, var(--accent-glow) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .card h3 {
+      font-family: var(--font-display);
+      color: var(--text-primary);
+      font-size: clamp(0.88rem, 1.2vw, 1rem);
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .card p {
+      color: var(--text-muted);
+      font-size: clamp(0.78rem, 1.1vw, 0.88rem);
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    .card-row[style*="--card-count: 4"],
+    .card-row[style*="--card-count: 5"] {
+      gap: 1rem;
+    }
+
+    .card-row[style*="--card-count: 4"] .card,
+    .card-row[style*="--card-count: 5"] .card {
+      padding: 1.25rem;
+    }
+
+    /* ===== COMPARISON SLIDE ===== */
+    .comparison-slide .slide-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      flex: 1;
+      align-content: center;
+    }
+
+    .comparison-slide .col {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: var(--shadow-md);
+      text-align: left;
+      font-size: clamp(0.84rem, 1.25vw, 1rem);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .comparison-slide .col:first-child {
+      border-left: 3px solid var(--accent);
+    }
+
+    .comparison-slide .col:last-child {
+      border-left: 3px solid var(--accent-secondary);
+    }
+
+    .comparison-slide .col-label {
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      margin-bottom: 1rem;
+    }
+
+    .comparison-slide .col:first-child .col-label {
+      color: var(--accent);
+    }
+
+    .comparison-slide .col:last-child .col-label {
+      color: var(--accent-secondary);
+    }
+
+    .comparison-slide .col ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .comparison-slide .col li {
+      padding: 0.5em 0;
+      border-bottom: 1px solid var(--divider);
+      color: var(--text-secondary);
+    }
+
+    .comparison-slide .col li:last-child {
+      border-bottom: none;
+    }
+
+    /* ===== UTILITY CLASSES ===== */
+    .accent { color: var(--accent); }
+    .accent-secondary { color: var(--accent-secondary); }
+    .muted { color: var(--text-muted); }
+    .text-sm { font-size: 0.82rem; }
+    .text-lg { font-size: 1.25rem; }
+    .text-center { text-align: center; }
+    .text-left { text-align: left; }
+    .mt-auto { margin-top: auto; }
+    .mb-1 { margin-bottom: 1rem; }
+    .mb-2 { margin-bottom: 2rem; }
+
+    .highlight-box {
+      background: var(--accent-soft);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 1rem 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .highlight-box p {
+      color: var(--text-primary);
+    }
+
+    .highlight-box.outstanding {
+      background: var(--accent-secondary-soft);
+      border-left-color: var(--accent-secondary);
+    }
+
+    .source-line {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      position: absolute;
+      bottom: 1rem;
+      left: 4.5rem;
+    }
+
+    /* ===== DATA TABLE ===== */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: clamp(0.84rem, 1.25vw, 1rem);
+    }
+
+    .data-table th {
+      text-align: left;
+      color: var(--accent);
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      padding: 0.6rem 0.75rem;
+      border-bottom: 2px solid var(--accent);
+    }
+
+    .data-table td {
+      padding: 0.55rem 0.75rem;
+      border-bottom: 1px solid var(--divider);
+      color: var(--text-secondary);
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .data-table .num {
+      text-align: right;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .data-table .highlight-row td {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* ===== SLIDE NUMBER ===== */
+    .reveal .slide-number {
+      font-family: var(--font-body);
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      background: transparent;
+      right: 1.5rem;
+      bottom: 0.8rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* ===== PROGRESS BAR ===== */
+    .reveal .progress {
+      height: 2px;
+      color: var(--accent);
+    }
+
+    /* ===== FRAGMENT ANIMATIONS ===== */
+    .reveal .slides section .fragment {
+      transition: all 0.35s ease;
+    }
+
+    .reveal .slides section .fragment.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* ===== PRINT STYLES ===== */
+    @media print {
+      .reveal::after { display: none; }
+      .reveal .slides section {
+        page-break-after: always;
+        page-break-inside: avoid;
+        background: #fff !important;
+        color: #111 !important;
+      }
+      .reveal .progress,
+      .reveal .slide-number {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- ==================== SLIDE 1: HOW THE TAXONOMY WORKS TODAY ==================== -->
+      <section>
+        <div class="slide-layout diagram-slide">
+          <div class="slide-header">
+            <h2>The taxonomy drives two revenue core outcomes through Sailthru</h2>
+          </div>
+          <div class="diagram-container">
+            <svg viewBox="0 0 960 480" xmlns="http://www.w3.org/2000/svg" style="max-width: 900px;">
+              <!-- Step 1: Article tagged -->
+              <rect x="310" y="6" width="340" height="62" rx="8" fill="#1c1c1a" stroke="#d4a853" stroke-width="1.5"/>
+              <text x="480" y="44" text-anchor="middle" fill="#ede8df" font-family="Fraunces, Georgia, serif" font-size="20" font-weight="600">Article tagged in CMS</text>
+
+              <!-- Arrow down -->
+              <line x1="480" y1="68" x2="480" y2="104" stroke="#d4a853" stroke-width="1.5" opacity="0.45"/>
+              <polygon points="474,100 480,112 486,100" fill="#d4a853" opacity="0.45"/>
+
+              <!-- Step 2: Tags to Sailthru -->
+              <rect x="250" y="112" width="460" height="64" rx="8" fill="#1c1c1a" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+              <text x="480" y="138" text-anchor="middle" fill="#d4a853" font-family="Outfit, sans-serif" font-size="16" font-weight="600" letter-spacing="0.5">TAGS FLOW TO SAILTHRU AS "INTERESTS"</text>
+              <text x="480" y="162" text-anchor="middle" fill="#7d7870" font-family="Outfit, sans-serif" font-size="15">Sailthru scrapes article pages / ingests tags into the Content Library</text>
+
+              <!-- Split arrows -->
+              <line x1="380" y1="176" x2="230" y2="240" stroke="#d4a853" stroke-width="1.5" opacity="0.3"/>
+              <polygon points="224,235 228,248 238,238" fill="#d4a853" opacity="0.3"/>
+              <line x1="580" y1="176" x2="730" y2="240" stroke="#d4a853" stroke-width="1.5" opacity="0.3"/>
+              <polygon points="722,238 732,248 736,235" fill="#d4a853" opacity="0.3"/>
+
+              <!-- Left: Topic Takeovers -->
+              <rect x="20" y="248" width="430" height="220" rx="8" fill="#1c1c1a" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+              <rect x="20" y="248" width="3" height="220" rx="1.5" fill="#d4a853"/>
+              <text x="52" y="284" fill="#ede8df" font-family="Fraunces, Georgia, serif" font-size="19" font-weight="600">Topic Takeovers</text>
+              <text x="52" y="314" fill="#c8c2b6" font-family="Outfit, sans-serif" font-size="15.5">Users build interest scores by reading</text>
+              <text x="52" y="334" fill="#c8c2b6" font-family="Outfit, sans-serif" font-size="15.5">tagged articles over time</text>
+              <line x1="52" y1="352" x2="430" y2="352" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+              <text x="52" y="376" fill="#7d7870" font-family="Outfit, sans-serif" font-size="14.5">~130 tags in active segment rules</text>
+              <text x="52" y="398" fill="#7d7870" font-family="Outfit, sans-serif" font-size="14.5">16 sponsor audience lists, ~5K per send</text>
+              <text x="52" y="420" fill="#7d7870" font-family="Outfit, sans-serif" font-size="14.5">Implicit signal: what users read</text>
+              <text x="52" y="452" fill="#d4a853" font-family="Outfit, sans-serif" font-size="14.5" font-style="italic" opacity="0.8">Revenue: direct-sold sponsor campaigns</text>
+
+              <!-- Right: My Topics -->
+              <rect x="510" y="248" width="430" height="220" rx="8" fill="#1c1c1a" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+              <rect x="510" y="248" width="3" height="220" rx="1.5" fill="#d4a853"/>
+              <text x="542" y="284" fill="#ede8df" font-family="Fraunces, Georgia, serif" font-size="19" font-weight="600">My Topics</text>
+              <text x="542" y="314" fill="#c8c2b6" font-family="Outfit, sans-serif" font-size="15.5">Users choose topics to follow; daily email</text>
+              <text x="542" y="334" fill="#c8c2b6" font-family="Outfit, sans-serif" font-size="15.5">sends matching articles automatically</text>
+              <line x1="542" y1="352" x2="920" y2="352" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+              <text x="542" y="376" fill="#7d7870" font-family="Outfit, sans-serif" font-size="14.5">~1,350 subscribers, ~625 daily sends</text>
+              <text x="542" y="398" fill="#7d7870" font-family="Outfit, sans-serif" font-size="14.5">Content matched from tagged articles in library</text>
+              <text x="542" y="420" fill="#7d7870" font-family="Outfit, sans-serif" font-size="14.5">Explicit signal: what users choose</text>
+              <text x="542" y="452" fill="#d4a853" font-family="Outfit, sans-serif" font-size="14.5" font-style="italic" opacity="0.8">Engagement: 3x flagship on opens and clicks</text>
+            </svg>
+          </div>
+          <div class="slide-takeaway">Both depend on tagged articles in Sailthru's Content Library. Both must survive the Arc migration.</div>
+        </div>
+        <aside class="notes">Walk through the flow from top to bottom. An article gets tagged in the CMS. Those tags flow to Sailthru as "interests" via the page scraper. From there, two things happen. First, Topic Takeovers: Sailthru builds interest scores for each user based on which tagged articles they read over time. Sponsor audience lists filter users who score above a threshold on clusters of tags. This is the revenue mechanism - direct-sold sponsor campaigns. Second, My Topics: users explicitly follow topics, and each day the system matches published articles against their follows and sends a personalized email. The engagement is exceptional -3x the flagship newsletter. Both depend on the same thing: correctly tagged articles landing in Sailthru's Content Library. That's why the taxonomy migration matters.</aside>
+      </section>
+
+      <!-- ==================== SLIDE 2: WHAT CHANGES IN ARC ==================== -->
+      <section>
+        <div class="slide-layout two-column-slide">
+          <div class="slide-header">
+            <h2>In Arc, two primitives replace one - but Sailthru works the same way</h2>
+          </div>
+          <div class="slide-columns">
+            <div class="col">
+              <div class="col-label">Today (Drupal)</div>
+              <p>One flat taxonomy of ~3,000 terms handles everything - editorial navigation, ad targeting, user follows, newsletter content matching.</p>
+              <p>All terms pass to Sailthru as interests. No distinction between a section like "sequencing" and a targeting tag like "liquid biopsy."</p>
+              <p>The vocabulary is ungoverned. Any editor can create tags. No lifecycle management.</p>
+            </div>
+            <div class="col">
+              <div class="col-label">Tomorrow (Arc)</div>
+              <p><strong>Sections</strong> (~210 nodes) handle editorial hierarchy - navigation, category pages, breadcrumbs. Per-site, not shared across brands.</p>
+              <p><strong>Tags</strong> (~275-325 governed terms, potentially more pending ad ops input and company name scoping) handle cross-cutting targeting - sponsor campaigns, niche topics that span sections, entity names.</p>
+              <p>Both sections and tags pass to Sailthru as interests. Downstream, nothing changes - interest scoring, audience building, and content matching all work the same way.</p>
+            </div>
+          </div>
+        </div>
+        <aside class="notes">The key message: Sailthru doesn't care whether a term is a "section" or a "tag" in Arc. It just needs strings in the Content Library to score against. So both sections and tags will pass to Sailthru as interests, exactly like the flat taxonomy does today. What changes is the CMS side - instead of one unstructured list of 3,000 terms, editors work with a structured section hierarchy for editorial navigation and a governed set of roughly 300 tags for targeting. The Sailthru plumbing stays intact. The segment rules will need rebuilding to match new term names, but the mechanics are identical. Migration planning has already mapped most of the existing taxonomy to this new structure.</aside>
+      </section>
+
+      <!-- ==================== SLIDE 3: DATA - SECTIONS & PERSONALIZATION ==================== -->
+      <section>
+        <div class="slide-layout two-column-slide">
+          <div class="slide-header">
+            <h2>Personalization delivers 3x flagship engagement - and it maps to sections</h2>
+          </div>
+          <div class="slide-columns">
+            <div class="col">
+              <div class="col-label">Engagement (6-month avg)</div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Newsletter</th>
+                    <th>Open</th>
+                    <th>CTR</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="highlight-row">
+                    <td>My Topics Daily</td>
+                    <td class="num">28.0%</td>
+                    <td class="num">4.1%</td>
+                  </tr>
+                  <tr>
+                    <td><em>GWDN Flagship</em></td>
+                    <td class="num"><em>9.2%</em></td>
+                    <td class="num"><em>1.2%</em></td>
+                  </tr>
+                  <tr>
+                    <td>Sequencing</td>
+                    <td class="num">13.0%</td>
+                    <td class="num">2.5%</td>
+                  </tr>
+                  <tr>
+                    <td>Proteomics</td>
+                    <td class="num">12.0%</td>
+                    <td class="num">4.5%</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="text-sm muted" style="margin-top: 0.75rem;">~1,350 My Topics subscribers, ~625 daily sends. Small audience, dramatically higher engagement.</p>
+            </div>
+            <div class="col">
+              <div class="col-label">Follow behavior maps to sections</div>
+              <div class="highlight-box">
+                <p style="margin:0;"><strong>88%</strong> of topic follows happen in the My Topics picker UI</p>
+              </div>
+              <div class="highlight-box">
+                <p style="margin:0;"><strong>92%</strong> of followed terms already map to Arc sections</p>
+              </div>
+              <p style="margin-top: 1.25rem;"><strong>My Topics is a newsletter channel play, not an on-site engagement driver.</strong> Only ~600 users visited the /my-topics page in 90 days (2% of active subscribers), and 88% visited once. Users configure their topics and consume the value via email.</p>
+              <p>Vertical newsletters show the same pattern - smaller, self-selected audiences consistently outperform the flagship 1.5-2x.</p>
+            </div>
+          </div>
+        </div>
+        <aside class="notes">Two stories on one slide. Left side: My Topics Daily is the highest-engagement newsletter in the portfolio. 3x the flagship on opens and clicks, consistent over 6 months. Right side: the follow behavior data and the channel story. 88% of follows happen in the picker UI, and 92% map to Arc sections. But critically, My Topics does not materially drive on-site engagement. Only about 600 users visited the /my-topics page in 90 days, which is 2% of active subscribers, and 88% of those were one-and-done visits. The value is entirely in the email channel. Users set up their topics once and consume via newsletter. This matters for scoping the follow UI rebuild - it's a setup tool, not a destination. The vertical newsletters reinforce the pattern: self-selected niche audiences consistently outperform the broadcast model.</aside>
+      </section>
+
+      <!-- ==================== SLIDE 4: DATA - TAGS ==================== -->
+      <section>
+        <div class="slide-layout content-slide">
+          <div class="slide-header">
+            <h2>Some terms can't be sections - they power ad targeting across editorial boundaries</h2>
+          </div>
+          <div class="slide-body">
+            <ul>
+              <li><strong>Cross-cutting topics</strong> - terms like "liquid biopsy" or "companion diagnostics" span multiple editorial sections. Sections are hierarchical; tags let the same article build interest scores across multiple targeting contexts.</li>
+              <li><strong>Entity names</strong> - sponsor companies aren't editorial categories. They're targeting handles that enable 100% share-of-voice campaigns. Users who read Illumina-tagged articles build Illumina interest scores, which feed the Illumina audience list.</li>
+              <li><strong>Ad-ops targeting clusters</strong> - Topic Takeover campaigns target groups of 13-21 tags per audience list, cutting across the section tree by design. <strong>~130 tags</strong> are in active segment rules across <strong>16 audience lists</strong>. Sends perform at <strong>10.5% open / 2.6% CTR</strong>.</li>
+              <li><strong>The governed vocabulary is smaller than assumed</strong> - data across three systems sizes the load-bearing taxonomy at <strong>~275-325 terms</strong>, not the ~3,000 in Drupal. <strong>~180 terms</strong> show zero evidence of use and are retirement candidates.</li>
+            </ul>
+            <div class="highlight-box outstanding" style="margin-top: 0.5rem;">
+              <p style="margin:0;"><strong>Outstanding:</strong> Ad ops input on active targeting tags and company name inclusion could both increase the governed vocabulary. Final number depends on cross-referencing both against what's already counted.</p>
+            </div>
+          </div>
+          <div class="slide-takeaway">Tags and sections solve different problems. The architecture needs both.</div>
+        </div>
+        <aside class="notes">This is the structural argument for why tags exist alongside sections. Sections organize content into an editorial hierarchy - an article lives in one section. Tags enable targeting across those boundaries. A single article about Illumina's new sequencing platform could build interest scores for the sequencing audience, the Illumina sponsor list, and a liquid biopsy campaign simultaneously. That cross-cutting capability is what sponsors are buying. The data sizing is important: roughly 275-325 terms are actually load-bearing, not the 3,000 historically accumulated. About 180 terms have zero evidence of use. Two outstanding items: ad ops hasn't audited which tags are in active GAM targeting yet, and the company names question is still open. Both need resolution before we lock the vocabulary. The takeaway sets up the options: tag assignment should be automated with AI classification.</aside>
+      </section>
+
+      <!-- ==================== SLIDE 5: TWO OPTIONS ==================== -->
+      <section>
+        <div class="slide-layout comparison-slide">
+          <div class="slide-header">
+            <h2>Both paths lead to AI-driven classification - the question is sequencing</h2>
+          </div>
+          <div class="slide-columns">
+            <div class="col">
+              <div class="col-label">Option A: Governed Tags, AI Later</div>
+              <ul>
+                <li>Load ~275-325+ tags + ~210 sections into Arc</li>
+                <li>Both pass to Sailthru as interests - downstream unchanged</li>
+                <li>Editors tag manually at launch</li>
+                <li>AI classification pipeline layers on post-launch</li>
+                <li style="border-bottom: none;"><strong>Lower cost, lower risk, proven pattern</strong></li>
+              </ul>
+            </div>
+            <div class="col">
+              <div class="col-label">Option B: AI Classification in Parallel</div>
+              <ul>
+                <li>Same June 18 migration work as Option A</li>
+                <li>Build AI classification pipeline in parallel starting now</li>
+                <li>Pipeline assigns tags from the governed vocabulary</li>
+                <li>Editors confirm or override AI suggestions</li>
+                <li style="border-bottom: none;"><strong>Faster to end-state, higher upfront investment</strong></li>
+              </ul>
+            </div>
+          </div>
+          <div class="slide-takeaway">If the parallel track slips, Option B degrades gracefully to Option A.</div>
+        </div>
+        <aside class="notes">Both options end up in the same place: AI classifies articles against GNW's vocabulary, manual tagging becomes override-only. The Sailthru pipeline is identical in both - sections and tags pass as interests, interest scoring works the same way, audience lists filter the same way. Option A gets to AI incrementally. Option B front-loads the investment. The critical safety net: if Option B's parallel track slips, you're in Option A anyway. The June 18 work is identical. The downstream Sailthru mechanics are identical. The only question is when AI classification arrives and how much engineering capacity to invest now versus later.</aside>
+      </section>
+
+      <!-- ==================== SLIDE 6: WHAT'S THE SAME ==================== -->
+      <section>
+        <div class="slide-layout card-grid-slide">
+          <div class="slide-header">
+            <h2>The June 18 migration work is the same either way</h2>
+          </div>
+          <div class="card-row" style="--card-count: 4">
+            <div class="card">
+              <h3>Seed ~275-325+ Tags</h3>
+              <p>Load the governed vocabulary into Arc. These tags pass to Sailthru as interests alongside sections - the Content Library and interest scoring continue working.</p>
+            </div>
+            <div class="card">
+              <h3>Build ~210 Sections</h3>
+              <p>Create the editorial hierarchy across three Arc sites. Sections also pass to Sailthru as interests, preserving My Topics matching and audience scoring.</p>
+            </div>
+            <div class="card">
+              <h3>Rebuild ~16 Segment Rules</h3>
+              <p>Update Sailthru audience lists to match new term names. One-time effort, high-stakes - missed lists break sponsor campaigns.</p>
+            </div>
+            <div class="card">
+              <h3>Migrate Content</h3>
+              <p>Assign tags and sections to migrated articles. Validate end-to-end: tagged article reaches Content Library, interest scores calculate, audience lists populate.</p>
+            </div>
+          </div>
+          <div class="slide-takeaway">The option choice affects what runs in parallel and when AI arrives - not the cutover itself.</div>
+        </div>
+        <aside class="notes">Ground the room: the bulk of the work is the same regardless of which option we go with. Tags get seeded, sections get built, segment rules get rebuilt to match new names, content gets migrated. The critical validation is end-to-end: a tagged article in Arc needs to reach the Sailthru Content Library, generate correct interest scores, and populate the right audience lists. That's the same pipeline in both options. The only difference is whether we also invest in building the AI classification pipeline in parallel or start that post-launch.</aside>
+      </section>
+
+      <!-- ==================== SLIDE 7: WHAT WE NEED TO ALIGN ON ==================== -->
+      <section>
+        <div class="slide-layout content-slide">
+          <div class="slide-header">
+            <h2>Outstanding questions and decisions</h2>
+          </div>
+          <div class="slide-body">
+            <ul>
+              <li><strong>Vocabulary lock</strong> - the ~275-325 estimate needs ad ops input on active targeting tags and a decision on which company names to include. Both could move the number up. Must finalize before tag seeding begins.</li>
+              <li><strong>Sailthru rebuild scope</strong> - ~16 audience list segment rules need rewriting to match new term names. Templates and send logic referencing the current taxonomy format need auditing. The My Topics Daily content matching logic needs to be confirmed so it keeps working with the new naming.</li>
+              <li><strong>Ad ops cutover validation</strong> - GAM line items targeting current term names need auditing and updating where names change. Sponsor campaigns can't regress at cutover.</li>
+              <li><strong>AI classification sequencing</strong> - the June 18 migration work is identical in both options. The choice is whether to invest in building the classification pipeline in parallel or layer it on after launch.</li>
+            </ul>
+          </div>
+        </div>
+        <aside class="notes">Four buckets of outstanding work. First: vocabulary lock. The governed tag count needs ad ops input and a company name decision before we can seed tags. Second: Sailthru ops. About 16 audience list segment rules need rewriting to match new names. The templates and Zephyr expressions that reference Drupal-pushed vars need auditing because some of those vars won't exist in Arc. And the My Topics Daily data feed matching logic needs to be understood and validated against the new naming - we don't currently have visibility into how that feed filters content per user. Third: ad ops cutover. GAM line items keyed on current term names need auditing so sponsor campaigns don't break. Fourth: the AI classification decision - whether to build in parallel or post-launch. All of these are scoping conversations, not blockers. The supporting analysis is available for anyone who wants the detail.</aside>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.2.1/reveal.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.2.1/plugin/notes/notes.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.2.1/plugin/highlight/highlight.min.js"></script>
+  <script>
+    Reveal.initialize({
+      hash: true,
+      slideNumber: true,
+      width: 1280,
+      height: 720,
+      margin: 0,
+      transition: 'fade',
+      transitionSpeed: 'slow',
+      backgroundTransition: 'none',
+      touch: true,
+      keyboard: true,
+      progress: true,
+      center: false,
+      plugins: [RevealNotes, RevealHighlight]
+    });
+  </script>
+</body>
+</html>
