@@ -1,986 +1,1008 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>GenomeWeb taxonomy &mdash; today and tomorrow</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GenomeWeb taxonomy migration &mdash; same commitments, half the systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html { scroll-behavior: smooth; scroll-padding-top: 1.5rem; }
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+:root {
+  --bg:           #f7f1e3;
+  --card:         #fcf8ec;
 
-  <style>
-    *, *::before, *::after { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; scroll-padding-top: 1.5rem; }
+  --ink:          #0f0e0a;
+  --ink-soft:     #3a3828;
+  --ink-mute:     #6b6248;
+  --ink-faint:    #9a9178;
 
-    :root {
-      /* Surfaces */
-      --bg:           #e6ecf3;
-      --bg-alt:       #f7f8fa;
-      --card:         #ffffff;
-      --card-alt:     #f4f6f9;
-      --card-soft:    #f9fafc;
+  --rule:         #d9cfb5;
 
-      /* Text */
-      --ink:          #0f172a;
-      --ink-soft:     #334155;
-      --ink-mute:     #64748b;
-      --ink-faint:    #94a3b8;
+  --accent:       #0d1b2a;
+  --accent-deep:  #050f1a;
+  --accent-wash:  rgba(13,27,42,0.07);
+  --accent-line:  rgba(13,27,42,0.3);
 
-      /* Rules */
-      --rule:         #e2e8f0;
-      --rule-strong:  #cbd5e1;
-      --rule-hair:    rgba(15,23,42,0.1);
-      --rule-soft:    rgba(15,23,42,0.06);
+  --accent2:      #b8821a;
+  --accent2-deep: #8a5f12;
+  --accent2-wash: rgba(184,130,26,0.1);
+  --accent2-line: rgba(184,130,26,0.3);
 
-      /* Crain brand */
-      --accent:       #002A4F;
-      --accent-deep:  #001a33;
-      --accent-light: #4a7ba7;
-      --accent-wash:  rgba(0,42,79,0.06);
-      --accent-line:  rgba(0,42,79,0.3);
+  --sage:         #8e9285;
+  --sage-wash:    rgba(142,146,133,0.07);
 
-      /* Data accents */
-      --neg:          #8a3a3a;
-      --pos:          #3a6b47;
-      --warn:         #956a2a;
-      --warn-deep:    #704d1e;
-      --warn-wash:    rgba(149,106,42,0.07);
-      --warn-line:    rgba(149,106,42,0.3);
+  --pos:          #3a6b47;
+  --neg:          #7c3434;
 
-      /* Fonts */
-      --font-body:    'Source Serif 4', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
-      --font-display: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, 'Times New Roman', serif;
-      --font-ui:      'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
-      --font-mono:    'JetBrains Mono', Consolas, 'SF Mono', Menlo, monospace;
+  --shadow-card:
+    0 1px 0 rgba(70,50,20,0.05),
+    0 4px 14px rgba(70,50,20,0.07),
+    0 18px 36px rgba(70,50,20,0.05);
 
-      /* Layout */
-      --col-max:      1180px;
-      --gutter:       clamp(1.25rem, 4vw, 3.25rem);
-      --card-pad-y:   clamp(2rem, 3.5vw, 3rem);
-      --card-pad-x:   clamp(1.5rem, 3.5vw, 3rem);
+  --font-body:    'Source Serif 4', 'Iowan Old Style', Georgia, serif;
+  --font-display: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  --font-ui:      'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono:    'JetBrains Mono', Consolas, monospace;
 
-      /* Shadow */
-      --shadow-card:
-        0 1px 0 rgba(15,23,42,0.03),
-        0 4px 14px rgba(15,23,42,0.04),
-        0 18px 36px rgba(15,23,42,0.03);
-    }
+  --col-max: 1180px;
+  --gutter: clamp(1.25rem, 4vw, 3.25rem);
+  --card-pad-y: clamp(2rem, 3.5vw, 3rem);
+  --card-pad-x: clamp(1.5rem, 3.5vw, 3rem);
+}
 
-    body {
-      background: var(--bg);
-      color: var(--ink);
-      font-family: var(--font-body);
-      font-size: 18px;
-      line-height: 1.6;
-      font-feature-settings: "kern", "liga", "calt";
-      font-variant-numeric: oldstyle-nums proportional-nums;
-      font-optical-sizing: auto;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      text-rendering: optimizeLegibility;
-    }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.6;
+  font-feature-settings: "kern", "liga", "calt";
+  font-variant-numeric: oldstyle-nums proportional-nums;
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
 
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background:
-        radial-gradient(1400px 900px at 15% -5%, rgba(255,255,255,0.55), transparent 60%),
-        radial-gradient(1100px 800px at 100% 105%, rgba(0,42,79,0.10), transparent 55%);
-      z-index: 0;
-    }
+body::before {
+  content: "";
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(1400px 900px at 15% -5%, rgba(255,248,225,0.55), transparent 60%),
+    radial-gradient(1100px 800px at 100% 105%, rgba(184,130,26,0.08), transparent 55%);
+}
 
-    main {
-      position: relative;
-      z-index: 1;
-      max-width: var(--col-max);
-      margin: 0 auto;
-      padding: clamp(1.5rem, 3vw, 2.5rem) var(--gutter) 6rem;
-    }
+main {
+  position: relative;
+  z-index: 1;
+  max-width: var(--col-max);
+  margin: 0 auto;
+  padding: clamp(1.5rem, 3vw, 2.5rem) var(--gutter) 6rem;
+}
 
-    /* ---------- Progress rail ---------- */
-    .progress-rail {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: transparent;
-      z-index: 50;
-      pointer-events: none;
-    }
-    .progress-rail::before {
-      content: "";
-      display: block;
-      height: 100%;
-      background: var(--accent);
-      transform-origin: 0 50%;
-      transform: scaleX(var(--p, 0));
-      transition: transform 0.12s linear;
-    }
+.progress-rail {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: transparent;
+  z-index: 50;
+  pointer-events: none;
+}
+.progress-rail::before {
+  content: "";
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: var(--accent);
+  transform-origin: 0 50%;
+  transform: scaleX(var(--p, 0));
+  transition: transform 0.12s linear;
+}
 
-    /* ---------- Brand strip (logo + byline) ---------- */
-    .brand-strip {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1.5rem;
-      padding: 0.25rem 0 1.5rem;
-      margin-bottom: clamp(1.25rem, 2.5vw, 2rem);
-      border-bottom: 1px solid var(--rule);
-    }
-    .brand-strip .brand-logo {
-      height: 36px;
-      width: auto;
-      display: block;
-    }
-    .brand-strip .byline {
-      display: flex;
-      align-items: center;
-      gap: 0.85rem;
-      font-family: var(--font-ui);
-      font-size: 0.78rem;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--ink-mute);
-    }
-    .brand-strip .byline b {
-      color: var(--ink);
-      font-weight: 600;
-    }
+.brand-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.25rem 0 1.5rem;
+  margin-bottom: clamp(1.25rem, 2.5vw, 2rem);
+  border-bottom: 1px solid var(--rule);
+}
+.brand-strip .brand-logo {
+  height: 36px;
+  width: auto;
+  display: block;
+}
+.brand-strip .byline {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  font-family: var(--font-ui);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  font-variant-numeric: tabular-nums;
+}
+.brand-strip .byline b {
+  color: var(--ink);
+  font-weight: 600;
+}
 
-    /* ---------- Typography ---------- */
-    h1, h2, h3, h4 {
-      font-family: var(--font-display);
-      color: var(--ink);
-      margin: 0;
-      text-wrap: pretty;
-    }
-    h1 {
-      font-size: clamp(1.95rem, 3.8vw, 2.85rem);
-      line-height: 1.08;
-      letter-spacing: -0.015em;
-      font-weight: 400;
-    }
-    h1 em { font-style: italic; color: var(--ink-soft); font-weight: 400; }
-    h2 {
-      font-size: clamp(1.55rem, 2.7vw, 2.05rem);
-      line-height: 1.15;
-      letter-spacing: -0.008em;
-      font-weight: 400;
-    }
-    h2 em { font-style: italic; color: var(--ink-soft); }
-    h3 {
-      font-size: clamp(1.12rem, 1.7vw, 1.3rem);
-      line-height: 1.3;
-      letter-spacing: -0.003em;
-      font-weight: 500;
-    }
-    h4 {
-      font-family: var(--font-ui);
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--ink-mute);
-    }
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  color: var(--ink);
+  margin: 0;
+  text-wrap: pretty;
+}
 
-    p { margin: 0 0 1em 0; }
-    p:last-child { margin-bottom: 0; }
+h1 {
+  font-size: clamp(1.95rem, 3.8vw, 2.85rem);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  font-weight: 400;
+}
+h1 em {
+  font-style: italic;
+  color: var(--ink-soft);
+  font-weight: 400;
+}
 
-    strong { font-weight: 600; color: var(--ink); }
-    em { font-style: italic; color: var(--ink-soft); }
-    code, .mono {
-      font-family: var(--font-mono);
-      font-size: 0.85em;
-      background: var(--card-alt);
-      padding: 0.05em 0.35em;
-      border-radius: 3px;
-      color: var(--ink);
-      letter-spacing: -0.01em;
-    }
+h2 {
+  font-size: clamp(1.55rem, 2.7vw, 2.05rem);
+  line-height: 1.15;
+  letter-spacing: -0.008em;
+  font-weight: 400;
+}
+h2 em { font-style: italic; color: var(--ink-soft); }
 
-    a {
-      color: var(--accent);
-      text-decoration: underline;
-      text-decoration-thickness: 1px;
-      text-underline-offset: 3px;
-      text-decoration-color: var(--accent-line);
-      transition: text-decoration-color 0.15s ease, color 0.15s ease;
-    }
-    a:hover {
-      text-decoration-color: var(--accent);
-      color: var(--accent-deep);
-    }
+h3 {
+  font-size: clamp(1.12rem, 1.7vw, 1.3rem);
+  line-height: 1.3;
+  letter-spacing: -0.003em;
+  font-weight: 500;
+}
 
-    /* ---------- Hero (masthead, no card chrome) ---------- */
-    header.hero {
-      background: transparent;
-      border: none;
-      box-shadow: none;
-      border-radius: 0;
-      padding: 0 0 clamp(2.5rem, 5vw, 4rem);
-      margin: 0 0 clamp(0.5rem, 1.5vw, 1rem);
-      position: relative;
-    }
-    header.hero::before {
-      content: "";
-      display: block;
-      width: 36px;
-      height: 2px;
-      background: var(--accent);
-      margin-bottom: 1.75rem;
-    }
-    header.hero h1.slide-title {
-      font-family: var(--font-display);
-      font-size: clamp(1.95rem, 3.8vw, 2.85rem);
-      line-height: 1.08;
-      letter-spacing: -0.015em;
-      font-weight: 400;
-      color: var(--ink);
-      margin: 0 0 1.35rem;
-      max-width: none;
-    }
-    header.hero .standfirst {
-      font-family: var(--font-display);
-      font-size: clamp(1.15rem, 1.9vw, 1.4rem);
-      line-height: 1.42;
-      font-weight: 400;
-      font-style: italic;
-      color: var(--ink-soft);
-      letter-spacing: -0.003em;
-      max-width: none;
-      margin: 0;
-    }
-    header.hero .standfirst + .standfirst { margin-top: 0.6rem; }
+h4 {
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
 
-    /* ---------- Kicker ---------- */
-    .kicker {
-      display: flex;
-      align-items: center;
-      gap: 0.85rem;
-      font-family: var(--font-ui);
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin: 0 0 1.25rem;
-      flex-wrap: wrap;
-    }
-    .kicker .sec-num {
-      font-family: var(--font-display);
-      font-size: 1.6rem;
-      font-weight: 400;
-      font-style: italic;
-      letter-spacing: -0.005em;
-      color: var(--ink);
-      line-height: 1;
-      text-transform: none;
-      position: relative;
-    }
-    .kicker .sec-num::after {
-      content: "";
-      display: inline-block;
-      width: 26px;
-      height: 1px;
-      background: var(--accent);
-      vertical-align: middle;
-      margin: 0 0 5px 0.75rem;
-    }
-    .kicker .future-tag {
-      display: inline-block;
-      padding: 0.22rem 0.55rem 0.2rem;
-      background: var(--warn);
-      color: #ffffff;
-      font-family: var(--font-ui);
-      font-size: 0.6rem;
-      font-weight: 700;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      border-radius: 2px;
-      margin-left: 0.35rem;
-      line-height: 1;
-    }
+p { margin: 0 0 1em 0; }
+p:last-child { margin-bottom: 0; }
 
-    /* ---------- Section cards ---------- */
-    section.section-card {
-      position: relative;
-      background: var(--card);
-      border: 1px solid var(--rule);
-      border-top: 3px solid var(--accent);
-      border-radius: 3px;
-      padding: var(--card-pad-y) var(--card-pad-x);
-      margin: 0 0 clamp(1.75rem, 3vw, 2.5rem);
-      box-shadow: var(--shadow-card);
-      scroll-margin-top: 1.5rem;
-    }
-    section.section-card > .kicker { margin-bottom: 1.5rem; }
-    section.section-card > h2 { margin-bottom: 1.5rem; max-width: none; }
+strong { font-weight: 600; color: var(--ink); }
+em { font-style: italic; color: var(--ink-soft); }
 
-    /* Future-state variant — amber accent */
-    section.section-card.future-state {
-      border-top-color: var(--warn);
-      background:
-        linear-gradient(180deg, var(--warn-wash), transparent 220px),
-        var(--card);
-    }
-    section.section-card.future-state .kicker { color: var(--warn-deep); }
-    section.section-card.future-state .kicker .sec-num::after { background: var(--warn); }
+a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--accent-line);
+  transition: text-decoration-color 0.15s ease, color 0.15s ease;
+}
+a:hover {
+  text-decoration-color: var(--accent);
+  color: var(--accent-deep);
+}
+a:focus-visible {
+  outline: 2px solid var(--accent2);
+  outline-offset: 2px;
+  border-radius: 1px;
+}
 
-    /* Comparison slide display title */
-    section.section-card > h2.cmp-display-title {
-      font-family: var(--font-display);
-      font-size: clamp(1.55rem, 2.7vw, 2.05rem);
-      font-weight: 400;
-      font-style: normal;
-      line-height: 1.15;
-      letter-spacing: -0.008em;
-      color: var(--ink);
-      margin: 0 0 1.5rem;
-      max-width: none;
-    }
-    section.section-card > h2.cmp-display-title--lead {
-      font-size: clamp(1.95rem, 3.8vw, 2.85rem);
-      line-height: 1.08;
-      letter-spacing: -0.015em;
-    }
+.num {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum", "lnum";
+  letter-spacing: -0.005em;
+}
+.num.neg { color: var(--neg); }
+.num.pos { color: var(--pos); }
+.mono {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  font-feature-settings: "tnum";
+  letter-spacing: -0.01em;
+}
 
-    /* Section lead / deck paragraph */
-    .section-deck,
-    .cmp-deck {
-      font-family: var(--font-display);
-      font-size: clamp(1.2rem, 2vw, 1.5rem);
-      line-height: 1.35;
-      font-style: italic;
-      font-weight: 400;
-      color: var(--ink);
-      max-width: none;
-      margin: 0 0 1.75rem;
-      letter-spacing: -0.005em;
-    }
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin: 0 0 1.25rem;
+  flex-wrap: wrap;
+}
+.kicker .sec-num {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  color: var(--ink);
+  line-height: 1;
+  text-transform: none;
+  font-style: italic;
+}
+.kicker .sec-num::after {
+  content: "";
+  display: inline-block;
+  width: 26px;
+  height: 1px;
+  background: var(--accent);
+  vertical-align: middle;
+  margin: 0 0 5px 0.75rem;
+}
 
-    /* ---------- Point blocks ---------- */
-    .point { margin-bottom: 1.35rem; }
-    .point:last-child { margin-bottom: 0; }
-    .point-head {
-      display: block;
-      font-family: var(--font-display);
-      font-size: clamp(1.05rem, 1.6vw, 1.2rem);
-      font-weight: 500;
-      color: var(--ink);
-      margin-bottom: 0.55rem;
-      line-height: 1.35;
-      letter-spacing: -0.003em;
-    }
-    .point-prose {
-      margin: 0;
-      font-size: 1rem;
-      line-height: 1.6;
-      color: var(--ink-soft);
-    }
-    .point-prose strong { color: var(--ink); }
-    .point ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
-    .point ul li {
-      position: relative;
-      padding-left: 1rem;
-      margin-bottom: 0.4rem;
-      font-size: 1rem;
-      line-height: 1.55;
-      color: var(--ink-soft);
-    }
-    .point ul li:last-child { margin-bottom: 0; }
-    .point ul li::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0.78em;
-      width: 5px;
-      height: 1px;
-      background: var(--rule-strong);
-    }
-    .point ul li strong { color: var(--ink); font-weight: 600; }
+header.hero {
+  padding: 0 0 clamp(2.5rem, 5vw, 4rem);
+  margin-bottom: clamp(0.5rem, 1.5vw, 1rem);
+  position: relative;
+  background: transparent;
+}
+header.hero::before {
+  content: "";
+  display: block;
+  width: 36px;
+  height: 2px;
+  background: var(--accent);
+  margin-bottom: 1.75rem;
+}
+header.hero h1 {
+  margin-bottom: 1.35rem;
+  max-width: none;
+}
+header.hero .standfirst {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 1.9vw, 1.45rem);
+  line-height: 1.42;
+  font-weight: 400;
+  color: var(--ink-soft);
+  font-style: italic;
+  letter-spacing: -0.003em;
+  max-width: none;
+  margin: 0;
+}
+header.hero .standfirst + .standfirst { margin-top: 0.6rem; }
 
-    /* Context cards under arch-diagram */
-    .arch-diagram ~ .point {
-      margin-top: 0;
-      margin-bottom: 0.85rem;
-      padding: 1rem 1.25rem 1.05rem;
-      background: var(--card-soft);
-      border-left: 3px solid var(--accent);
-      border-radius: 0 3px 3px 0;
-    }
-    .arch-diagram + .point { margin-top: 1.5rem; }
-    .arch-diagram ~ .point:last-of-type { margin-bottom: 0; }
-    .arch-diagram ~ .point .point-head { color: var(--accent-deep); }
+section.primary {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-top: 3px solid var(--accent);
+  border-radius: 3px;
+  padding: var(--card-pad-y) var(--card-pad-x);
+  margin: 0 0 clamp(1.75rem, 3vw, 2.5rem);
+  box-shadow: var(--shadow-card);
+  scroll-margin-top: 1.5rem;
+}
+section.primary > .kicker { margin-bottom: 1.5rem; }
+section.primary h2 { margin-bottom: 1.25rem; max-width: none; }
 
-    section.section-card.future-state .arch-diagram ~ .point {
-      background: var(--warn-wash);
-      border-left-color: var(--warn);
-    }
-    section.section-card.future-state .arch-diagram ~ .point .point-head {
-      color: var(--warn-deep);
-    }
+section.primary .lead {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
+  line-height: 1.35;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--ink);
+  margin-bottom: 1.5rem;
+  max-width: none;
+  letter-spacing: -0.005em;
+}
 
-    /* Takeaway (footnote-weight close) */
-    .takeaway {
-      margin-top: 1.75rem;
-      padding-top: 0.9rem;
-      border-top: 1px dashed var(--rule);
-      font-family: var(--font-body);
-      font-style: italic;
-      font-weight: 400;
-      font-size: 0.94rem;
-      line-height: 1.55;
-      color: var(--ink-mute);
-    }
+.panel + .panel { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--rule); }
 
-    /* Note callout */
-    .note {
-      margin-top: 1.5rem;
-      padding: 1.05rem 1.3rem;
-      background: var(--bg-alt);
-      border-left: 2px solid var(--ink-faint);
-      font-size: 0.94rem;
-      line-height: 1.6;
-      color: var(--ink-soft);
-      border-radius: 0 2px 2px 0;
-    }
-    .note strong { color: var(--ink); }
+/* ---------- Job 3: Claim + asks ---------- */
+.ifthen {
+  display: grid;
+  grid-template-columns: 2.25rem 1fr;
+  gap: 1.1rem;
+  padding: 1.35rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.ifthen:first-of-type { padding-top: 0.5rem; }
+.ifthen:last-of-type { border-bottom: none; padding-bottom: 0.3rem; }
+.ifthen .nn {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: var(--accent);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.ifthen .cond {
+  font-family: var(--font-display);
+  font-size: clamp(1.08rem, 1.7vw, 1.25rem);
+  line-height: 1.38;
+  font-weight: 400;
+  color: var(--ink);
+  margin-bottom: 0.55rem;
+  letter-spacing: -0.003em;
+}
+.ifthen .cond b {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  color: var(--ink-mute);
+  margin-right: 0.6rem;
+  vertical-align: 0.18em;
+}
+.ifthen .actual {
+  font-size: 0.98rem;
+  color: var(--ink-soft);
+  line-height: 1.58;
+}
+.ifthen .actual b {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  color: var(--accent2-deep);
+  margin-right: 0.55rem;
+}
 
-    /* Inline cite */
-    .cite {
-      font-family: var(--font-ui);
-      font-size: 0.78rem;
-      color: var(--ink-mute);
-      margin-left: 0.35em;
-      white-space: nowrap;
-    }
-    .cite a { color: var(--accent); }
+ul.data-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 1.25rem;
+}
+ul.data-bullets > li {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+ul.data-bullets > li:last-child { border-bottom: none; }
+ul.data-bullets > li > b,
+ul.data-bullets > li > strong { color: var(--ink); font-weight: 600; }
 
-    /* ---------- Comparison components (sections 01/02) ---------- */
-    .cmp-state-header {
-      display: grid;
-      grid-template-columns: 1fr 2.5rem 1fr;
-      gap: clamp(1.25rem, 2.5vw, 2rem);
-      align-items: end;
-      padding-bottom: 0.7rem;
-      margin: 0 0 1.1rem;
-      border-bottom: 1px solid var(--rule-strong);
-    }
-    .cmp-state-header .state-label {
-      font-family: var(--font-ui);
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--ink-mute);
-    }
-    .cmp-state-header .state-label.post { color: var(--accent); }
+/* ---------- Callouts ---------- */
+.callout {
+  margin: 1.75rem 0 0;
+  padding: 1.25rem 1.5rem;
+  background: var(--accent-wash);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 2px 2px 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.callout strong {
+  color: var(--accent-deep);
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  display: inline-block;
+  margin-right: 0.45rem;
+}
+.callout.decision {
+  background: var(--accent2-wash);
+  border-left-color: var(--accent2);
+}
+.callout.decision strong { color: var(--accent2-deep); }
+.callout-muted {
+  margin: 1.5rem 0 0;
+  padding: 1.1rem 1.35rem;
+  background: var(--sage-wash);
+  border-left: 2px solid var(--ink-faint);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+.callout-muted strong { color: var(--ink); }
 
-    .cmp-pair {
-      padding: 0.2rem 0 1.5rem;
-      margin-bottom: 1.5rem;
-      border-bottom: 1px solid var(--rule-strong);
-    }
-    .cmp-pair:last-of-type { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
-    .cmp-pair-head {
-      font-family: var(--font-ui);
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin: 0 0 0.75rem;
-    }
-    .cmp-pair-body {
-      display: grid;
-      grid-template-columns: 1fr 2.5rem 1fr;
-      gap: clamp(1.25rem, 2.5vw, 2rem);
-      align-items: stretch;
-    }
-    .cmp-cell { padding: 0.2rem 0; }
-    .cmp-cell .point { margin-bottom: 0; }
-    .cmp-cell .point-head {
-      font-family: var(--font-display);
-      font-size: 1.04rem;
-      font-weight: 500;
-      line-height: 1.35;
-      margin-bottom: 0.45rem;
-    }
-    .cmp-cell .point-prose { font-size: 0.96rem; line-height: 1.55; }
-    .cmp-cell .point ul li { font-size: 0.96rem; line-height: 1.5; }
+/* ---------- Job 6: Current -> future ---------- */
+.cmp-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin: 1rem 0 0;
+}
+@media (max-width: 860px) { .cmp-grid { grid-template-columns: 1fr; } }
 
-    .cmp-cell.post {
-      background: var(--accent-wash);
-      border: 1px solid var(--accent-line);
-      padding: 0.9rem 1.1rem;
-      border-radius: 3px;
-      margin: -0.4rem -0.5rem;
-      position: relative;
-    }
-    .cmp-cell.post::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: var(--accent);
-      border-radius: 3px 3px 0 0;
-    }
-    .cmp-cell.post .point-head { color: var(--accent-deep); }
-    .cmp-cell.post ul li::before { background: var(--accent); }
+.cmp-card {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 1.5rem 1.35rem 1.25rem;
+  position: relative;
+}
+.cmp-card.current { border-top: 2px solid var(--accent); }
+.cmp-card.future {
+  border-top: 2px solid var(--accent2);
+  background:
+    linear-gradient(180deg, var(--accent2-wash) 0%, transparent 40%),
+    var(--card);
+}
+.cmp-card .cmp-label {
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-bottom: 0.85rem;
+}
+.cmp-card.future .cmp-label { color: var(--accent2-deep); }
+.cmp-card ul { list-style: none; padding: 0; margin: 0; }
+.cmp-card ul > li {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+.cmp-card ul > li:last-child { border-bottom: none; }
+.cmp-card ul > li b { color: var(--ink); font-weight: 600; }
 
-    .cmp-seam {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--font-display);
-      font-size: 1.9rem;
-      font-weight: 400;
-      font-style: italic;
-      color: var(--accent);
-      opacity: 0.55;
-      line-height: 1;
-      padding-top: 0.15rem;
-    }
+.cmp-delta {
+  margin: 1rem 0 0;
+  padding: 0.95rem 1.15rem;
+  background: var(--accent-wash);
+  border-left: 3px solid var(--accent);
+  font-size: 0.98rem;
+  color: var(--ink);
+  font-style: italic;
+  line-height: 1.55;
+}
+.cmp-delta b { color: var(--ink); font-style: normal; font-weight: 600; }
 
-    @media (max-width: 820px) {
-      .cmp-state-header { grid-template-columns: 1fr; }
-      .cmp-state-header .state-label.post::before { content: "\2192 "; }
-      .cmp-pair-body { grid-template-columns: 1fr; gap: 0.65rem; }
-      .cmp-seam { font-size: 1.5rem; padding: 0.3rem 0; transform: rotate(90deg); }
-      .cmp-cell.post { margin: 0; }
-    }
+/* ---------- KPI strips for baselines (Job 2 style, scaled smaller for appendix) ---------- */
+.kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0;
+  margin: 0.9rem 0 1.5rem;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.kpi-strip .kpi {
+  padding: 1rem 1rem;
+  border-right: 1px solid var(--rule);
+}
+.kpi-strip .kpi:last-child { border-right: none; }
+.kpi-strip .kpi .k-label {
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-bottom: 0.45rem;
+}
+.kpi-strip .kpi .k-val {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--ink);
+  font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: -0.01em;
+}
+.kpi-strip .kpi.featured .k-val { color: var(--accent2); }
+.kpi-strip .kpi.featured { background: var(--sage-wash); }
 
-    /* Preserved (commitments unchanged) panel */
-    .cmp-preserved {
-      background: var(--card-alt);
-      border: 1px solid var(--rule);
-      border-left: 3px solid var(--ink-faint);
-      border-radius: 0 3px 3px 0;
-      padding: 1.35rem 1.75rem;
-      margin: 0 0 1.5rem;
-    }
-    .cmp-preserved-label {
-      font-family: var(--font-ui);
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--ink-mute);
-      margin: 0 0 0.9rem;
-    }
-    .cmp-preserved ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      columns: 2;
-      column-gap: 2.25rem;
-    }
-    .cmp-preserved ul li {
-      position: relative;
-      padding-left: 1rem;
-      margin-bottom: 0.4rem;
-      font-size: 0.98rem;
-      line-height: 1.5;
-      color: var(--ink-soft);
-      break-inside: avoid;
-    }
-    .cmp-preserved ul li strong { color: var(--ink); }
-    .cmp-preserved ul li::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0.75em;
-      width: 5px;
-      height: 1px;
-      background: var(--ink-faint);
-    }
-    @media (max-width: 720px) { .cmp-preserved ul { columns: 1; } }
+.preserved-list {
+  background: var(--sage-wash);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--ink-faint);
+  border-radius: 0 2px 2px 0;
+  padding: 1.1rem 1.4rem 1.15rem;
+  margin: 0 0 1.25rem;
+}
+.preserved-list .pl-label {
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin: 0 0 0.65rem;
+}
+.preserved-list ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  columns: 2;
+  column-gap: 2rem;
+}
+.preserved-list ul > li {
+  position: relative;
+  padding-left: 0.95rem;
+  margin-bottom: 0.4rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  break-inside: avoid;
+}
+.preserved-list ul > li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.7em;
+  width: 5px;
+  height: 1px;
+  background: var(--ink-faint);
+}
+@media (max-width: 720px) { .preserved-list ul { columns: 1; } }
 
-    /* Metrics strip */
-    .cmp-metrics-wrap { margin: 0 0 2rem; }
-    .cmp-metrics-eyebrow {
-      font-family: var(--font-ui);
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--ink-mute);
-      margin: 0 0 0.65rem;
-    }
-    .cmp-metrics-strip {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.25rem 2.5rem;
-      padding: 1.1rem 0;
-      border-top: 1px solid var(--rule);
-      border-bottom: 1px solid var(--rule);
-    }
-    .cmp-metrics-strip .metric {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-    .cmp-metrics-strip .metric-value {
-      font-family: var(--font-display);
-      font-size: 1.2rem;
-      font-weight: 500;
-      color: var(--ink);
-      line-height: 1.15;
-      font-variant-numeric: lining-nums tabular-nums;
-      letter-spacing: -0.01em;
-    }
-    .cmp-metrics-strip .metric-label {
-      font-family: var(--font-ui);
-      font-size: 0.68rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--ink-mute);
-      line-height: 1.2;
-    }
+/* ---------- Methodology bullets (sentences allowed in appendix) ---------- */
+.method-block { margin: 1.25rem 0 0; }
+.method-block:first-of-type { margin-top: 0.5rem; }
+.method-block .mb-head {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: 0.55rem;
+  line-height: 1.35;
+  letter-spacing: -0.003em;
+}
+.method-block ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.method-block ul > li {
+  position: relative;
+  padding-left: 1rem;
+  margin-bottom: 0.45rem;
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+.method-block ul > li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.78em;
+  width: 5px;
+  height: 1px;
+  background: var(--rule);
+}
+.method-block ul > li b,
+.method-block ul > li strong { color: var(--ink); font-weight: 600; }
 
-    /* Outcome band */
-    .cmp-outcome {
-      background: var(--accent-wash);
-      border: 1px solid var(--accent-line);
-      border-left: 3px solid var(--accent);
-      border-radius: 0 3px 3px 0;
-      padding: 1.5rem 1.75rem;
-      margin: 2rem 0 1.25rem;
-    }
-    .cmp-outcome-eyebrow {
-      font-family: var(--font-ui);
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin: 0 0 0.6rem;
-    }
-    .cmp-outcome-title {
-      font-family: var(--font-display);
-      font-size: clamp(1.2rem, 2vw, 1.45rem);
-      font-weight: 500;
-      color: var(--accent-deep);
-      margin: 0 0 1rem;
-      max-width: 48ch;
-      line-height: 1.25;
-      letter-spacing: -0.008em;
-    }
-    .cmp-outcome ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      columns: 2;
-      column-gap: 2.25rem;
-    }
-    .cmp-outcome ul li {
-      position: relative;
-      padding-left: 1rem;
-      margin-bottom: 0.4rem;
-      font-size: 0.98rem;
-      line-height: 1.5;
-      color: var(--ink);
-      break-inside: avoid;
-    }
-    .cmp-outcome ul li strong { color: var(--ink); font-weight: 600; }
-    .cmp-outcome ul li::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0.75em;
-      width: 5px;
-      height: 1px;
-      background: var(--accent);
-    }
-    @media (max-width: 720px) { .cmp-outcome ul { columns: 1; } }
+/* ---------- Source note ---------- */
+.src {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 0.82rem;
+  color: var(--ink-mute);
+  margin-top: 1.5rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--rule);
+  font-variant-numeric: tabular-nums oldstyle-nums;
+  line-height: 1.55;
+}
 
-    /* ---------- Architecture diagram (SVG container + SVG classes) ---------- */
-    .arch-diagram {
-      margin: 1.25rem -0.5rem 1.25rem;
-      padding: 1rem;
-      background: var(--card-alt);
-      border: 1px solid var(--rule);
-      border-radius: 2px;
-      width: auto;
-      overflow-x: auto;
-    }
-    section.section-card.future-state .arch-diagram {
-      background: var(--warn-wash);
-      border-color: var(--warn-line);
-    }
-    .arch-diagram svg {
-      display: block;
-      width: 100%;
-      height: auto;
-      min-width: 760px;
-    }
-    .arch-diagram .arch-rect {
-      fill: var(--card);
-      stroke: var(--rule-strong);
-      stroke-width: 1;
-    }
-    .arch-diagram .arch-rect-conv {
-      fill: var(--accent-wash);
-      stroke: var(--accent-line);
-      stroke-width: 1.25;
-    }
-    .arch-diagram .arch-rect-conv-stripe { fill: var(--accent); }
-    .arch-diagram .arch-rect-out {
-      fill: var(--accent);
-      stroke: var(--accent-deep);
-      stroke-width: 1;
-    }
-    .arch-diagram .arch-rect-warn {
-      fill: var(--card);
-      stroke: var(--accent);
-      stroke-width: 1.25;
-      stroke-dasharray: 4,2.5;
-    }
-    .arch-diagram .arch-lane-header {
-      font-family: 'Inter', system-ui, sans-serif;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      fill: var(--ink-mute);
-    }
-    .arch-diagram .arch-system {
-      font-family: 'Inter', system-ui, sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      fill: var(--ink);
-    }
-    .arch-diagram .arch-system-conv {
-      fill: var(--accent-deep);
-      font-weight: 700;
-    }
-    .arch-diagram .arch-system-out {
-      fill: #ffffff;
-      font-weight: 700;
-    }
-    .arch-diagram .arch-action {
-      font-family: 'Source Serif 4', Georgia, serif;
-      font-size: 11.5px;
-      font-weight: 400;
-      fill: var(--ink-soft);
-    }
-    .arch-diagram .arch-action-out { fill: rgba(255, 255, 255, 0.88); }
-    .arch-diagram .arch-action-conv { fill: var(--ink); }
-    .arch-diagram .arch-arrow {
-      stroke: var(--ink-mute);
-      stroke-width: 1;
-      fill: none;
-    }
-    .arch-diagram .arch-arrow-strong {
-      stroke: var(--accent);
-      stroke-width: 1.5;
-    }
-    .arch-diagram .arch-arrow-label {
-      font-family: 'Inter', system-ui, sans-serif;
-      font-size: 10.5px;
-      fill: var(--ink-mute);
-    }
-    .arch-diagram .arch-warn-tag {
-      font-family: 'Inter', system-ui, sans-serif;
-      font-size: 9.5px;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      fill: var(--accent);
-    }
-    .arch-diagram .arch-phase-header {
-      font-family: 'Inter', system-ui, sans-serif;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      fill: var(--accent);
-    }
-    section.section-card.future-state .arch-diagram .arch-phase-header { fill: var(--warn-deep); }
-    section.section-card.future-state .arch-diagram .arch-warn-tag { fill: var(--warn-deep); }
-    section.section-card.future-state .arch-diagram .arch-rect-warn { stroke: var(--warn); }
-    section.section-card.future-state .arch-diagram .arch-rect-conv {
-      fill: rgba(149,106,42,0.08);
-      stroke: var(--warn-line);
-    }
-    section.section-card.future-state .arch-diagram .arch-rect-conv-stripe { fill: var(--warn); }
-    section.section-card.future-state .arch-diagram .arch-system-conv { fill: var(--warn-deep); }
-    section.section-card.future-state .arch-diagram .arch-rect-out {
-      fill: var(--warn);
-      stroke: var(--warn-deep);
-    }
-    section.section-card.future-state .arch-diagram .arch-arrow-strong {
-      stroke: var(--warn);
-    }
+/* ---------- Architecture diagram (SVG container + classes) ---------- */
+.arch-diagram {
+  margin: 1.25rem -0.5rem 1.25rem;
+  padding: 1rem;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  width: auto;
+  overflow-x: auto;
+}
+.arch-diagram.future {
+  background: var(--accent2-wash);
+  border-color: var(--accent2-line);
+}
+.arch-diagram svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-width: 760px;
+}
+.arch-diagram .arch-rect {
+  fill: var(--card);
+  stroke: var(--rule);
+  stroke-width: 1;
+}
+.arch-diagram .arch-rect-conv {
+  fill: var(--accent-wash);
+  stroke: var(--accent-line);
+  stroke-width: 1.25;
+}
+.arch-diagram .arch-rect-conv-stripe { fill: var(--accent); }
+.arch-diagram .arch-rect-out {
+  fill: var(--accent);
+  stroke: var(--accent-deep);
+  stroke-width: 1;
+}
+.arch-diagram .arch-rect-warn {
+  fill: var(--card);
+  stroke: var(--accent);
+  stroke-width: 1.25;
+  stroke-dasharray: 4,2.5;
+}
+.arch-diagram .arch-lane-header {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  fill: var(--ink-mute);
+}
+.arch-diagram .arch-system {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  fill: var(--ink);
+}
+.arch-diagram .arch-system-conv {
+  fill: var(--accent-deep);
+  font-weight: 700;
+}
+.arch-diagram .arch-system-out {
+  fill: #fcf8ec;
+  font-weight: 700;
+}
+.arch-diagram .arch-action {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 11.5px;
+  font-weight: 400;
+  fill: var(--ink-soft);
+}
+.arch-diagram .arch-action-out { fill: rgba(252, 248, 236, 0.88); }
+.arch-diagram .arch-action-conv { fill: var(--ink); }
+.arch-diagram .arch-arrow {
+  stroke: var(--ink-mute);
+  stroke-width: 1;
+  fill: none;
+}
+.arch-diagram .arch-arrow-strong {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+.arch-diagram .arch-arrow-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10.5px;
+  fill: var(--ink-mute);
+}
+.arch-diagram .arch-warn-tag {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  fill: var(--accent);
+}
+.arch-diagram .arch-phase-header {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  fill: var(--accent);
+}
+.arch-diagram.future .arch-phase-header { fill: var(--accent2-deep); }
+.arch-diagram.future .arch-warn-tag { fill: var(--accent2-deep); }
+.arch-diagram.future .arch-rect-warn { stroke: var(--accent2); }
+.arch-diagram.future .arch-rect-conv {
+  fill: var(--accent2-wash);
+  stroke: var(--accent2-line);
+}
+.arch-diagram.future .arch-rect-conv-stripe { fill: var(--accent2); }
+.arch-diagram.future .arch-system-conv { fill: var(--accent2-deep); }
+.arch-diagram.future .arch-rect-out {
+  fill: var(--accent2);
+  stroke: var(--accent2-deep);
+}
+.arch-diagram.future .arch-arrow-strong { stroke: var(--accent2); }
 
-    /* ---------- Appendix divider + TOC ---------- */
-    .appendix-divider {
-      margin: clamp(3rem, 5vw, 4.5rem) auto clamp(2rem, 4vw, 3rem);
-      padding: 2rem 0 0;
-      text-align: center;
-      position: relative;
-    }
-    .appendix-rule {
-      width: 3rem;
-      height: 1px;
-      background: var(--ink);
-      margin: 0 auto 1.75rem;
-    }
-    .appendix-title {
-      font-family: var(--font-display);
-      font-size: clamp(2rem, 3.5vw, 2.6rem);
-      font-weight: 500;
-      letter-spacing: -0.008em;
-      color: var(--accent);
-      margin: 0 0 0.55rem;
-      line-height: 1.1;
-    }
-    .appendix-title::after {
-      content: "";
-      display: block;
-      width: 6px;
-      height: 6px;
-      background: var(--accent);
-      border-radius: 50%;
-      margin: 0.85rem auto 0;
-    }
-    .appendix-deck {
-      font-family: var(--font-display);
-      font-style: italic;
-      font-size: clamp(1.05rem, 1.5vw, 1.15rem);
-      color: var(--ink-soft);
-      margin: 0.65rem auto 2.5rem;
-      max-width: 64ch;
-      letter-spacing: -0.003em;
-    }
+/* ---------- Appendix break + TOC ---------- */
+.appx-break {
+  margin: clamp(3rem, 5vw, 4.5rem) auto clamp(2rem, 4vw, 3rem);
+  padding: 2.5rem 0 0;
+  text-align: center;
+  position: relative;
+}
+.appx-break::before {
+  content: "";
+  display: block;
+  width: 3rem;
+  height: 1px;
+  background: var(--ink);
+  margin: 0 auto 2rem;
+}
+.appx-break::after {
+  content: "";
+  display: block;
+  width: 6px;
+  height: 6px;
+  background: var(--accent2);
+  border-radius: 50%;
+  margin: 0.85rem auto 0;
+}
+.appx-break h2 {
+  font-size: clamp(1.8rem, 3vw, 2.3rem);
+  font-weight: 500;
+  letter-spacing: -0.008em;
+  color: var(--ink);
+  margin: 0;
+}
+.appx-break .sub {
+  font-weight: 400;
+  color: var(--ink-soft);
+  font-style: italic;
+  font-size: 1.05rem;
+  margin-top: 0.65rem;
+  max-width: 64ch;
+  margin-left: auto;
+  margin-right: auto;
+}
 
-    .appendix-toc {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.5rem 2rem;
-      text-align: left;
-    }
-    .appendix-col { display: flex; flex-direction: column; }
-    .appendix-col-head {
-      font-family: var(--font-ui);
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--ink);
-      padding-bottom: 0.55rem;
-      border-bottom: 1px solid var(--ink);
-      margin-bottom: 0.4rem;
-    }
-    .appendix-subhead {
-      font-family: var(--font-ui);
-      font-size: 0.62rem;
-      font-weight: 600;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--ink-mute);
-      margin: 0.7rem 0 0.15rem;
-      padding-bottom: 0.25rem;
-    }
-    .appendix-subhead:first-of-type { margin-top: 0.25rem; }
-    .appendix-subhead.is-future { color: var(--warn-deep); }
+.toc-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0 2rem;
+  margin: 1.75rem auto 0;
+  text-align: left;
+  max-width: 1100px;
+}
+.toc { margin: 0; padding: 0; list-style: none; font-size: 0.95rem; }
+.toc li {
+  break-inside: avoid;
+  padding: 0.5rem 0;
+  border-bottom: 1px dotted var(--rule);
+}
+.toc li.toc-group {
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink);
+  border-bottom: 1px solid var(--ink);
+  padding: 0.3rem 0 0.55rem;
+  margin: 0;
+}
+.toc li a {
+  text-decoration: none;
+  color: var(--ink);
+  display: grid;
+  grid-template-columns: 2.1rem 1fr;
+  gap: 0.45rem;
+  align-items: baseline;
+}
+.toc li a:hover { color: var(--accent); }
+.toc li a b {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 1024px) { .toc-grid { grid-template-columns: 1fr 1fr; gap: 1.5rem 2rem; } }
+@media (max-width: 720px)  { .toc-grid { grid-template-columns: 1fr; gap: 1.5rem; } }
 
-    a.appendix-toc-item {
-      display: grid;
-      grid-template-columns: 2.3rem 1fr;
-      gap: 0.4rem;
-      align-items: baseline;
-      padding: 0.5rem 0;
-      border-bottom: 1px dotted var(--rule);
-      text-decoration: none;
-      color: var(--ink);
-      transition: color 0.15s ease;
-    }
-    a.appendix-toc-item:last-child { border-bottom: none; }
-    .appendix-toc-item .toc-num {
-      font-family: var(--font-display);
-      font-weight: 500;
-      font-style: italic;
-      font-size: 1rem;
-      color: var(--accent);
-      letter-spacing: -0.005em;
-      font-variant-numeric: tabular-nums;
-    }
-    a.appendix-toc-item.is-future .toc-num { color: var(--warn-deep); }
-    .appendix-toc-item .toc-title {
-      font-family: var(--font-body);
-      font-size: 0.94rem;
-      color: var(--ink-soft);
-      line-height: 1.4;
-    }
-    a.appendix-toc-item:hover .toc-title,
-    a.appendix-toc-item:hover .toc-num { color: var(--accent); }
-    a.appendix-toc-item.is-future:hover .toc-title,
-    a.appendix-toc-item.is-future:hover .toc-num { color: var(--warn); }
+.appx-bucket-break {
+  margin: 2.5rem 0 1rem;
+  padding: 0;
+}
+.appx-bucket-break h4 {
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid var(--rule);
+}
 
-    @media (max-width: 1024px) {
-      .appendix-toc { grid-template-columns: 1fr 1fr; gap: 1.75rem; }
-    }
-    @media (max-width: 820px) {
-      .appendix-toc { grid-template-columns: 1fr; gap: 1.5rem; }
-    }
+section.appx {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-top: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: clamp(1.5rem, 2.5vw, 2rem) clamp(1.5rem, 3vw, 2.25rem);
+  margin: 0 0 clamp(1rem, 2vw, 1.5rem);
+  scroll-margin-top: 1.5rem;
+}
+section.appx h3 {
+  margin-bottom: 0.7rem;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.005em;
+  line-height: 1.3;
+}
+section.appx .lead {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.1rem;
+  line-height: 1.4;
+  color: var(--ink-soft);
+  margin-bottom: 1.1rem;
+  letter-spacing: -0.003em;
+}
+section.appx .kicker { margin-bottom: 0.9rem; color: var(--ink-mute); }
+section.appx .kicker .sec-num { font-size: 1.25rem; }
+section.appx.future .kicker .sec-num::after { background: var(--accent2); }
 
-    /* ---------- Endnote footer ---------- */
-    footer.endnote {
-      margin-top: clamp(2.5rem, 4vw, 3.5rem);
-      padding: 1.5rem 1.75rem;
-      background: var(--card);
-      border: 1px solid var(--rule);
-      border-radius: 3px;
-      font-family: var(--font-ui);
-      font-size: 0.82rem;
-      color: var(--ink-mute);
-      line-height: 1.7;
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
+footer.endnote {
+  margin-top: 3.5rem;
+  padding: 1.5rem 1.75rem;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  font-family: var(--font-ui);
+  font-size: 0.86rem;
+  color: var(--ink-mute);
+  line-height: 1.7;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
 
-    /* ---------- Print ---------- */
-    @media print {
-      body { background: #fff; font-size: 10pt; }
-      body::before, .progress-rail { display: none; }
-      main { padding: 0; max-width: none; }
-      section.section-card { box-shadow: none; page-break-inside: avoid; margin-bottom: 1.5rem; }
-      .brand-strip { page-break-after: avoid; }
-      .arch-diagram { page-break-inside: avoid; }
-    }
+@media print {
+  body { background: #fff; font-size: 10pt; }
+  body::before, .progress-rail { display: none; }
+  main { padding: 1.25cm; max-width: none; }
+  section.primary, section.appx { box-shadow: none; page-break-inside: avoid; margin-bottom: 1.25rem; }
+  .arch-diagram { page-break-inside: avoid; }
+  .brand-strip { page-break-after: avoid; }
+}
 
-    /* ---------- Small screens ---------- */
-    @media (max-width: 720px) {
-      body { font-size: 16px; }
-      .brand-strip {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.75rem;
-      }
-      section.section-card {
-        padding: clamp(1.5rem, 4vw, 2rem);
-      }
-      .kicker .sec-num::after { display: none; }
-    }
+@media (max-width: 720px) {
+  body { font-size: 16px; }
+  .brand-strip { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+  section.primary, section.appx { padding: clamp(1.25rem, 4vw, 1.75rem); }
+  .kicker .sec-num::after { display: none; }
+  .kpi-strip { grid-template-columns: 1fr; }
+  .kpi-strip .kpi { border-right: none; border-bottom: 1px solid var(--rule); }
+  .kpi-strip .kpi:last-child { border-bottom: none; }
+}
 
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      .progress-rail::before { transition: none; }
-      * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-    }
-  </style>
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .progress-rail { display: none; }
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* ---------- A1 source-of-truth conflict matrix ---------- */
+.sot-matrix {
+  margin: 0.5rem 0 0;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--card);
+}
+.sot-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+.sot-table thead th {
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  text-align: left;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--rule);
+  background: var(--sage-wash);
+  vertical-align: bottom;
+}
+.sot-table tbody td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink-soft);
+  vertical-align: top;
+}
+.sot-table tbody tr:last-child td { border-bottom: none; }
+.sot-table td.sot-item {
+  color: var(--ink);
+  font-weight: 500;
+  font-family: var(--font-display);
+  width: 20%;
+}
+.sot-table td.sot-silent {
+  color: var(--ink-faint);
+  font-style: italic;
+}
+.sot-table td.sot-risk {
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  width: 8%;
+}
+.sot-table td.sot-risk.risk-high { color: var(--neg); }
+.sot-table td.sot-risk.risk-med { color: var(--accent2-deep); }
+.sot-table td.sot-risk.risk-low { color: var(--ink-mute); }
+
+.sot-today {
+  margin-top: 1.75rem;
+  padding-top: 1.35rem;
+  border-top: 1px dashed var(--rule);
+}
+.sot-today-head {
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin: 0 0 0.85rem;
+}
+.sot-today-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 2.25rem;
+}
+.sot-today-block .sot-tb-label {
+  font-family: var(--font-ui);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-bottom: 0.5rem;
+}
+.sot-today-block ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sot-today-block ul > li {
+  position: relative;
+  padding-left: 0.95rem;
+  margin-bottom: 0.35rem;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+.sot-today-block ul > li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.7em;
+  width: 5px;
+  height: 1px;
+  background: var(--ink-faint);
+}
+@media (max-width: 720px) {
+  .sot-today-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+  .sot-table { font-size: 0.86rem; }
+  .sot-table thead th, .sot-table tbody td { padding: 0.7rem 0.75rem; }
+  .sot-table td.sot-item { width: auto; }
+}
+</style>
 </head>
 <body>
 
@@ -998,253 +1020,132 @@
 
   <!-- ============ HERO ============ -->
   <header class="hero" id="intro">
-    <h1 class="slide-title">GenomeWeb taxonomy migration</h1>
-    <p class="standfirst">We&rsquo;re rebuilding GenomeWeb&rsquo;s taxonomy and personalization in Arc &mdash; same commitments to sponsors and readers, simpler process underneath, scalable to the rest of the portfolio.</p>
+    <h1>GenomeWeb migrates to Arc with sponsor commitments and reader expectations intact &mdash; <em>half the overhead, portable across brands.</em></h1>
   </header>
 
-  <!-- ============ SECTION 01: ADVERTISER COMPARISON (current vs post migration) ============ -->
-  <section class="section-card cmp-slide" id="advertiser">
-    <div class="kicker"><span class="sec-num">01</span> Sponsorship process</div>
-    <h2 class="cmp-display-title">Current and post migration sponsorship process overview</h2>
+  <!-- ============ SECTION 01 — CLAIM + ASKS ============ -->
+  <section class="primary" id="s1">
+    <div class="kicker"><span class="sec-num">01</span>Four shifts</div>
+    <h2>STAMP replaces hand-tagging, standing packages replace bespoke sponsor builds, and one page-KV contract feeds Sailthru and GAM.</h2>
+    <p class="lead">The migration retires per-sponsor assembly and per-article hand-tagging.</p>
 
-    <div class="cmp-state-header">
-      <div class="state-label">Current state</div>
-      <div></div>
-      <div class="state-label post">Post migration</div>
-    </div>
-
-    <div class="cmp-pair">
-      <div class="cmp-pair-head">Content tagging</div>
-      <div class="cmp-pair-body">
-        <div class="cmp-cell">
-          <div class="point">
-            <strong class="point-head">Articles are tagged manually by editorial in the CMS</strong>
-            <p class="point-prose">Tags feed content, advertising, and newsletter targeting downstream.</p>
-          </div>
-        </div>
-        <div class="cmp-seam" aria-hidden="true">&rsaquo;</div>
-        <div class="cmp-cell post">
-          <div class="point">
-            <strong class="point-head">Articles are tagged automatically by STAMP</strong>
-            <p class="point-prose">Classifications emit as page key-values that GAM and Sailthru both read.</p>
-          </div>
-        </div>
+    <div class="ifthen">
+      <div class="nn">01</div>
+      <div>
+        <div class="cond"><b>Current</b>Editorial hand-tags every article from a 3,000-term shared vocabulary; ad ops and editorial each maintain a parallel curated list on top.</div>
+        <div class="actual"><b>Future</b> STAMP classifies on publish against a governed vocabulary editorial owns. Editor confirms or overrides edge cases. One source of truth replaces three parallel lists.</div>
       </div>
     </div>
 
-    <div class="cmp-pair">
-      <div class="cmp-pair-head">Campaign setup</div>
-      <div class="cmp-pair-body">
-        <div class="cmp-cell">
-          <div class="point">
-            <strong class="point-head">Each campaign is built bespoke across 5 systems and 5+ handoffs</strong>
-            <ul>
-              <li>Sales</li>
-              <li>Marketing automation</li>
-              <li>YourBow (external vendor)</li>
-              <li>Ad ops</li>
-            </ul>
-            <p class="point-prose"><span class="cite">(&rarr; <a href="#a2-1-sponsor-current">sponsor lifecycle &mdash; current</a>)</span></p>
-          </div>
-        </div>
-        <div class="cmp-seam" aria-hidden="true">&rsaquo;</div>
-        <div class="cmp-cell post">
-          <div class="point">
-            <strong class="point-head">Each campaign is built from a pre-built standard package</strong>
-            <p class="point-prose">Standing topical newsletter + matched display takeover + report <span class="cite">(&rarr; <a href="#a2-2-sponsor-future">sponsor lifecycle &mdash; future</a>)</span>.</p>
-          </div>
-        </div>
+    <div class="ifthen">
+      <div class="nn">02</div>
+      <div>
+        <div class="cond"><b>Current</b>Each sponsor campaign is built bespoke across five systems and five-plus handoffs, with an external vendor in the critical path.</div>
+        <div class="actual"><b>Future</b> Sponsors pick a standing package off the shelf. Marketing automation schedules and uploads creative against a standing template. Three systems, two-to-three handoffs, no external vendor in the critical path.</div>
       </div>
     </div>
 
-    <div class="cmp-pair">
-      <div class="cmp-pair-head">Newsletter setup</div>
-      <div class="cmp-pair-body">
-        <div class="cmp-cell">
-          <div class="point">
-            <strong class="point-head">Each send is hand-built per campaign by marketing ops</strong>
-            <ul>
-              <li>Carve lists cloned</li>
-              <li>Templates duplicated</li>
-              <li>Competitor-exclusion clauses mutated</li>
-            </ul>
-          </div>
-        </div>
-        <div class="cmp-seam" aria-hidden="true">&rsaquo;</div>
-        <div class="cmp-cell post">
-          <div class="point">
-            <strong class="point-head">Each send runs from a standing template, no per-send work</strong>
-            <p class="point-prose">Standing templates, standing lists; no per-campaign or per-send build.</p>
-          </div>
-        </div>
+    <div class="ifthen">
+      <div class="nn">03</div>
+      <div>
+        <div class="cond"><b>Current</b>Reader follows live in one storage layer; subscribing to the newsletter lives in another.</div>
+        <div class="actual"><b>Future</b> One opt-in subscribes the reader by definition. Inferred reading signals layer onto explicit preferences without reader action. The follower-vs-subscriber seam closes.</div>
       </div>
     </div>
 
-    <div class="cmp-pair">
-      <div class="cmp-pair-head">Ad Ops Setup</div>
-      <div class="cmp-pair-body">
-        <div class="cmp-cell">
-          <div class="point">
-            <strong class="point-head">Competitor exclusions are hand-maintained on every line item</strong>
-            <p class="point-prose">Inline on every live line item.</p>
-          </div>
-        </div>
-        <div class="cmp-seam" aria-hidden="true">&rsaquo;</div>
-        <div class="cmp-cell post">
-          <div class="point">
-            <strong class="point-head">Competitor exclusions are automatic via package ownership</strong>
-            <p class="point-prose">Sponsor owns all 5 positions for the run period; no hand-maintained exclusion lists.</p>
-          </div>
-        </div>
+    <div class="ifthen">
+      <div class="nn">04</div>
+      <div>
+        <div class="cond"><b>Current</b>This Sailthru to GAM bridge is a parameter on the email click-through URL. If it&rsquo;s stripped or mistyped, GAM can&rsquo;t match the takeover line item and default ads fill the slots &mdash; no alert fires.</div>
+        <div class="actual"><b>Future</b> The article page emits page key-values. GAM and Sailthru both read the same source. One contract, multiple consumers.</div>
       </div>
     </div>
 
-    <div class="cmp-outcome">
-      <div class="cmp-outcome-title">Operational Impact</div>
-      <ul>
-        <li>Critical-path systems: <strong>5 &rarr; 3</strong></li>
-        <li>Per-campaign handoffs: <strong>5+ &rarr; 2&ndash;3</strong></li>
-        <li>Per-send manual mutations: <strong>&rarr; zero</strong></li>
-        <li>Single-operator risk <strong>dissolves</strong></li>
-      </ul>
+    <div class="callout">
+      <strong>Cross-brand</strong> The same architecture lights up a newsletter on each of the next fifteen brands without per-brand re-engineering.
     </div>
 
-    <p class="takeaway">STAMP is the spine. Same commitments to advertisers, dramatically simpler operations underneath.</p>
+    <p class="src">Sources: Sailthru analytics, GAM line-item data, internal ops audit. Pulled 04/2026. Universe: GenomeWeb production traffic, active sponsor campaigns, reader follow records.</p>
   </section>
 
-  <!-- ============ SECTION 02: READER COMPARISON (current vs post migration) ============ -->
-  <section class="section-card cmp-slide" id="reader">
-    <div class="kicker"><span class="sec-num">02</span> Reader experience</div>
-    <h2 class="cmp-display-title">Current and post migration reader experience overview</h2>
+  <!-- ============ SECTION 02 — SPONSOR CURRENT -> FUTURE ============ -->
+  <section class="primary" id="s2">
+    <div class="kicker"><span class="sec-num">02</span>Sponsor process</div>
+    <h2>Sponsor delivery collapses from five systems and five-plus handoffs to three systems and two-to-three handoffs.</h2>
+    <p class="lead">Bespoke per-campaign assembly retires. Standing topic packages take its place. Same deliverables for the sponsor.</p>
 
-    <div class="cmp-state-header">
-      <div class="state-label">Current state</div>
-      <div></div>
-      <div class="state-label post">Post migration</div>
-    </div>
-
-    <div class="cmp-pair">
-      <div class="cmp-pair-head">Opt-in mechanics</div>
-      <div class="cmp-pair-body">
-        <div class="cmp-cell">
-          <div class="point">
-            <strong class="point-head">Three opt-in surfaces, with follow &ne; subscribe</strong>
-            <ul>
-              <li>Preferences UI, topic-page buttons, article-page buttons</li>
-              <li>Following a topic doesn&rsquo;t subscribe the user to the newsletter &mdash; separate plumbing</li>
-            </ul>
-          </div>
-        </div>
-        <div class="cmp-seam" aria-hidden="true">&rsaquo;</div>
-        <div class="cmp-cell post">
-          <div class="point">
-            <strong class="point-head">One opt-in surface, with follow = subscribe</strong>
-            <p class="point-prose">Topic page and article page follow buttons retire &mdash; a single flow for &lsquo;topic&rsquo; following and newsletter opt-in.</p>
-          </div>
-        </div>
+    <div class="cmp-grid">
+      <div class="cmp-card current">
+        <div class="cmp-label">Current</div>
+        <ul>
+          <li><b>Manual content tagging.</b> Editorial tags every article in the CMS by hand.</li>
+          <li><b>Bespoke campaign assembly.</b> Five systems, five-plus handoffs, external vendor in the critical path.</li>
+          <li><b>Per-send hand-built newsletters.</b> Marketing ops carves audiences and clones templates per send.</li>
+          <li><b>Hand-typed competitor exclusions.</b> Up to ninety edits across the live book per new launch.</li>
+        </ul>
+      </div>
+      <div class="cmp-card future">
+        <div class="cmp-label">Future</div>
+        <ul>
+          <li><b>Automatic content tagging.</b> STAMP classifies every article on publish against the governed vocabulary.</li>
+          <li><b>Off-the-shelf package assembly.</b> Three systems, two-to-three handoffs, no external vendor in the critical path.</li>
+          <li><b>Standing-template newsletters.</b> No per-send carving, cloning, or template mutation.</li>
+          <li><b>Structural competitor exclusions.</b> Zero exclusion-list edits per launch; the package owns all positions for the run period.</li>
+        </ul>
       </div>
     </div>
 
-    <div class="cmp-pair">
-      <div class="cmp-pair-head">Content tagging</div>
-      <div class="cmp-pair-body">
-        <div class="cmp-cell">
-          <div class="point">
-            <strong class="point-head">Followable topic list mirrors the entire Drupal taxonomy</strong>
-            <p class="point-prose">Every Drupal term shows up in My Topics; readers can follow any of them.</p>
-          </div>
-        </div>
-        <div class="cmp-seam" aria-hidden="true">&rsaquo;</div>
-        <div class="cmp-cell post">
-          <div class="point">
-            <strong class="point-head">Followable topic list is generated automatically by STAMP</strong>
-            <p class="point-prose">No editorial topic list to maintain; new tags surface the moment content publishes.</p>
-          </div>
-        </div>
-      </div>
-    </div>
+    <div class="cmp-delta">Critical-path systems <b>5 &rarr; 3</b>. Per-campaign handoffs <b>5+ &rarr; 2&ndash;3</b>. Per-send manual mutations <b>&rarr; zero</b>. Single-operator risk <b>dissolves</b>. See <a href="#a2">A2</a> and <a href="#a3">A3</a> for the system-by-system lifecycle.</div>
 
-    <div class="cmp-pair">
-      <div class="cmp-pair-head">Personalization engine</div>
-      <div class="cmp-pair-body">
-        <div class="cmp-cell">
-          <div class="point">
-            <strong class="point-head">Personalization runs through an opaque Sailthru data feed</strong>
-            <p class="point-prose">Tag-matching at render time inside a Zephyr template that&rsquo;s difficult to audit <span class="cite">(&rarr; <a href="#a3-1-reader-current">reader lifecycle &mdash; current</a>)</span>.</p>
-          </div>
-        </div>
-        <div class="cmp-seam" aria-hidden="true">&rsaquo;</div>
-        <div class="cmp-cell post">
-          <div class="point">
-            <strong class="point-head">Personalization runs through transparent page key-values</strong>
-            <p class="point-prose">The same data backbone Sailthru reads is what GAM reads &mdash; one source, two consumers.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="cmp-pair">
-      <div class="cmp-pair-head">Relevance model</div>
-      <div class="cmp-pair-body">
-        <div class="cmp-cell">
-          <div class="point">
-            <strong class="point-head">Relevance comes from explicit follows only</strong>
-            <p class="point-prose">Relevance is whatever the user explicitly picked; reading behavior doesn&rsquo;t feed back.</p>
-          </div>
-        </div>
-        <div class="cmp-seam" aria-hidden="true">&rsaquo;</div>
-        <div class="cmp-cell post">
-          <div class="point">
-            <strong class="point-head">Relevance comes from explicit follows plus inferred reading signals</strong>
-            <p class="point-prose">The personalized brief becomes truly automated; relevance evolves with reading behavior <span class="cite">(&rarr; <a href="#a3-2-reader-future">reader lifecycle &mdash; future</a>)</span>.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="cmp-pair">
-      <div class="cmp-pair-head">Consumption surfaces</div>
-      <div class="cmp-pair-body">
-        <div class="cmp-cell">
-          <div class="point">
-            <strong class="point-head">Two consumption surfaces &mdash; newsletter + on-site feed</strong>
-            <p class="point-prose">Dual consumption surfaces; readers configure on-site and mostly consume via email.</p>
-          </div>
-        </div>
-        <div class="cmp-seam" aria-hidden="true">&rsaquo;</div>
-        <div class="cmp-cell post">
-          <div class="point">
-            <strong class="point-head">One consumption surface &mdash; newsletter only</strong>
-            <p class="point-prose">On-site My Topics content discovery retires.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="cmp-outcome">
-      <div class="cmp-outcome-title">Experience Updates</div>
-      <ul>
-        <li>Opt-in surfaces: <strong>3 &rarr; 1</strong></li>
-        <li>Consumption surfaces: <strong>2 &rarr; 1</strong></li>
-        <li>Editorial topic-list maintenance: <strong>&rarr; zero</strong></li>
-        <li>Relevance evolves with reading behavior</li>
-        <li>Pattern travels to 16+ brands &mdash; GNW is wave 1</li>
-      </ul>
-    </div>
-
-    <p class="takeaway">Same reader experience. STAMP-driven relevance, single opt-in, single channel &mdash; and the pattern travels to 16+ Crain brands.</p>
+    <p class="src">Sources: ops audit of marketing automation, ad ops, and sales workflows; GAM line-item exclusion patterns; sponsor campaign register. Pulled 04/2026. Universe: 15 active GenomeWeb sponsor campaigns.</p>
   </section>
 
-  <!-- ============ SECTION 03: ARCHITECTURE DIAGRAM ============ -->
-  <section class="section-card cmp-slide future-state" id="architecture">
-    <div class="kicker"><span class="sec-num">03</span> Post migration end to end flow <span class="future-tag">future state</span></div>
-    <h2 class="cmp-display-title">Post migration end to end flow</h2>
-    <p class="cmp-deck">All three flows converge on shared page key value pair contract.</p>
+  <!-- ============ SECTION 03 — READER CURRENT -> FUTURE ============ -->
+  <!-- Adjacency justified: sponsor (02) and reader (03) are the two stakeholder halves of the same architectural shift. The symmetry IS the point of the deck; merging them would bury it. -->
+  <section class="primary" id="s3">
+    <div class="kicker"><span class="sec-num">03</span>Reader experience</div>
+    <h2>Reader opt-in collapses from three surfaces to one, and relevance starts learning from reading behavior.</h2>
+    <p class="lead">One opt-in surface. One channel. Automated relevance that improves with use. Same newsletter.</p>
 
-    <div class="arch-diagram">
+    <div class="cmp-grid">
+      <div class="cmp-card current">
+        <div class="cmp-label">Current</div>
+        <ul>
+          <li><b>Three opt-in surfaces.</b> Preferences UI, topic-page button, article-page button.</li>
+          <li><b>Follow does not equal subscribe.</b> Topic follow and newsletter subscription are separate plumbing.</li>
+          <li><b>Followable list mirrors the full Drupal taxonomy.</b> Every term shows up in My Topics.</li>
+          <li><b>Personalization runs through an opaque Sailthru data feed.</b> Tag-matching at render time inside an unauditable Zephyr template.</li>
+          <li><b>Relevance comes from explicit follows only.</b> Reading behavior never feeds back.</li>
+        </ul>
+      </div>
+      <div class="cmp-card future">
+        <div class="cmp-label">Future</div>
+        <ul>
+          <li><b>One opt-in surface.</b> Preferences UI; topic-page and article-page buttons retire.</li>
+          <li><b>Follow equals subscribe.</b> A single opt-in flow does both.</li>
+          <li><b>Followable list is generated automatically by STAMP.</b> No editorial topic list to maintain.</li>
+          <li><b>Personalization runs through transparent page key-values.</b> GAM and Sailthru read the same source.</li>
+          <li><b>Relevance comes from explicit follows plus inferred reading signals.</b> The newsletter evolves with reading behavior.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cmp-delta">Opt-in surfaces <b>3 &rarr; 1</b>. Consumption surfaces <b>2 &rarr; 1</b>. Editorial topic-list maintenance <b>&rarr; zero</b>. Pattern travels to <b>15+ brands</b>. See <a href="#a5">A5</a> and <a href="#a6">A6</a> for the lifecycle in detail.</div>
+
+    <p class="src">Sources: Sailthru user records and send logs; on-site preferences-UI analytics; Drupal taxonomy export. Pulled 04/2026. Universe: GenomeWeb stated followers (n = 12,891) and active-tier newsletter recipients.</p>
+  </section>
+
+  <!-- ============ SECTION 04 — ARCHITECTURE SPINE (Methodology, main-track exception) ============ -->
+  <!-- Pre-approved exception: the end-to-end flow diagram is the proof of the convergence claim and earns main-track placement. -->
+  <section class="primary" id="s4">
+    <div class="kicker"><span class="sec-num">04</span>Architecture spine</div>
+    <h2>Sponsor, editorial, and reader flows converge on one contract: page key-values emitted at article render.</h2>
+    <p class="lead">The article page render is the only handshake. GAM, the Sailthru content scraper, and Junction all read from the same source.</p>
+
+    <div class="arch-diagram future">
       <svg viewBox="0 0 1040 880" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="archTitle archDesc" preserveAspectRatio="xMidYMid meet">
         <title id="archTitle">Post-migration end-to-end architecture</title>
-        <desc id="archDesc">Sponsor, editorial, and reader flows converge at the Arc article page render, where page key-values are emitted as both Sailthru meta tags and googletag.setTargeting calls. GAM, the Sailthru Content Library scraper, and Junction all read from that single contract. Junction passthrough writes explicit and inferred reader signals to the Sailthru profile. The Sailthru send-time match combines the reader profile with the Content Library to assemble each reader's personalized daily brief.</desc>
+        <desc id="archDesc">Sponsor, editorial, and reader flows converge at the Arc article page render, where page key-values are emitted as both Sailthru meta tags and googletag.setTargeting calls. GAM, the Sailthru Content Library scraper, and Junction all read from that single contract. Junction passthrough writes explicit and inferred reader signals to the Sailthru profile. The Sailthru send-time match combines the reader profile with the Content Library to assemble each reader's newsletter.</desc>
 
         <defs>
           <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto">
@@ -1255,28 +1156,23 @@
           </marker>
         </defs>
 
-        <!-- Lane headers -->
         <text class="arch-lane-header" x="160" y="22" text-anchor="middle">Sponsor</text>
         <text class="arch-lane-header" x="520" y="22" text-anchor="middle">Editorial</text>
         <text class="arch-lane-header" x="880" y="22" text-anchor="middle">Reader</text>
 
-        <!-- Lane vertical arrows (sponsor) -->
         <line class="arch-arrow" x1="160" y1="120" x2="160" y2="142" marker-end="url(#arr)"/>
         <line class="arch-arrow" x1="160" y1="215" x2="160" y2="237" marker-end="url(#arr)"/>
         <line class="arch-arrow" x1="160" y1="310" x2="160" y2="352" marker-end="url(#arr)"/>
         <text class="arch-arrow-label" x="170" y="335">click &rarr; article</text>
 
-        <!-- Lane vertical arrows (editorial) -->
         <line class="arch-arrow" x1="520" y1="120" x2="520" y2="142" marker-end="url(#arr)"/>
         <line class="arch-arrow" x1="520" y1="215" x2="520" y2="237" marker-end="url(#arr)"/>
         <line class="arch-arrow" x1="520" y1="310" x2="520" y2="352" marker-end="url(#arr)"/>
         <text class="arch-arrow-label" x="530" y="335">classifications</text>
 
-        <!-- Reader prefs UI -> Junction (long vertical, runs along right column) -->
         <line class="arch-arrow" x1="880" y1="120" x2="880" y2="467" marker-end="url(#arr)"/>
         <text class="arch-arrow-label" x="890" y="295">explicit signal</text>
 
-        <!-- Convergence -> consumers -->
         <line class="arch-arrow" x1="160" y1="435" x2="160" y2="467" marker-end="url(#arr)"/>
         <text class="arch-arrow-label" x="170" y="458">ad call</text>
         <line class="arch-arrow" x1="520" y1="435" x2="520" y2="467" marker-end="url(#arr)"/>
@@ -1284,25 +1180,19 @@
         <path class="arch-arrow" d="M 660 405 Q 700 425 745 467" marker-end="url(#arr)"/>
         <text class="arch-arrow-label" x="670" y="395">reading event</text>
 
-        <!-- GAM -> Display takeover (output) -->
         <line class="arch-arrow arch-arrow-strong" x1="160" y1="540" x2="160" y2="577" marker-end="url(#arr-acc)"/>
         <text class="arch-arrow-label" x="170" y="565">matched line item</text>
 
-        <!-- Junction -> Sailthru profile -->
         <line class="arch-arrow" x1="880" y1="540" x2="880" y2="577" marker-end="url(#arr)"/>
 
-        <!-- Sailthru CL -> Send-time match -->
         <line class="arch-arrow" x1="520" y1="540" x2="520" y2="687" marker-end="url(#arr)"/>
         <text class="arch-arrow-label" x="530" y="615">indexed articles</text>
 
-        <!-- Sailthru profile -> Send-time match (diagonal) -->
         <path class="arch-arrow" d="M 740 615 Q 700 660 745 687" marker-end="url(#arr)"/>
         <text class="arch-arrow-label" x="660" y="673">reader profile</text>
 
-        <!-- Send-time match -> Personalized brief -->
         <line class="arch-arrow arch-arrow-strong" x1="490" y1="760" x2="490" y2="787" marker-end="url(#arr-acc)"/>
 
-        <!-- ROW 1: Origin -->
         <g>
           <rect class="arch-rect" x="20" y="50" width="280" height="70" rx="4"/>
           <text class="arch-system" x="34" y="74">Sales</text>
@@ -1327,7 +1217,6 @@
           </text>
         </g>
 
-        <!-- ROW 2: Process -->
         <g>
           <rect class="arch-rect" x="20" y="145" width="280" height="70" rx="4"/>
           <text class="arch-system" x="34" y="169">Marketing automation</text>
@@ -1344,7 +1233,6 @@
           </text>
         </g>
 
-        <!-- ROW 3: Send / review -->
         <g>
           <rect class="arch-rect" x="20" y="240" width="280" height="70" rx="4"/>
           <text class="arch-system" x="34" y="264">Sailthru</text>
@@ -1361,7 +1249,6 @@
           </text>
         </g>
 
-        <!-- CONVERGENCE 1: Article page render -->
         <g>
           <rect class="arch-rect-conv" x="80" y="355" width="580" height="80" rx="4"/>
           <rect class="arch-rect-conv-stripe" x="84" y="355" width="572" height="3"/>
@@ -1372,7 +1259,6 @@
           </text>
         </g>
 
-        <!-- ROW 5: Reads from convergence -->
         <g>
           <rect class="arch-rect" x="20" y="470" width="280" height="70" rx="4"/>
           <text class="arch-system" x="34" y="494">GAM</text>
@@ -1398,7 +1284,6 @@
           </text>
         </g>
 
-        <!-- ROW 6: Output / Profile -->
         <g>
           <rect class="arch-rect-out" x="20" y="580" width="280" height="70" rx="4"/>
           <text class="arch-system arch-system-out" x="34" y="608">Display takeover served</text>
@@ -1416,18 +1301,16 @@
           </text>
         </g>
 
-        <!-- CONVERGENCE 2: Send-time match -->
         <g>
           <rect class="arch-rect-conv" x="200" y="690" width="580" height="70" rx="4"/>
           <rect class="arch-rect-conv-stripe" x="204" y="690" width="572" height="3"/>
           <text class="arch-system arch-system-conv" x="490" y="717" text-anchor="middle">Sailthru send-time match</text>
           <text class="arch-action arch-action-conv" y="740" text-anchor="middle">
             <tspan x="490" dy="0">Combines reader profile with Content Library</tspan>
-            <tspan x="490" dy="14">to assemble each reader's daily brief</tspan>
+            <tspan x="490" dy="14">to assemble each reader's newsletter</tspan>
           </text>
         </g>
 
-        <!-- FINAL OUTPUT: Personalized brief -->
         <g>
           <rect class="arch-rect-out" x="290" y="790" width="400" height="60" rx="4"/>
           <text class="arch-system arch-system-out" x="490" y="826" text-anchor="middle">Personalized newsletter delivered</text>
@@ -1435,157 +1318,160 @@
       </svg>
     </div>
 
-    <p class="takeaway">One page-KV contract for content. One profile for reader signal. Same architecture serves the next 15 brands.</p>
+    <ul class="data-bullets">
+      <li><b>One contract for content.</b> Page key-values emit as Sailthru meta tags AND <span class="mono">googletag.setTargeting</span> calls.</li>
+      <li><b>One profile for the reader.</b> Junction passthrough writes explicit preferences and inferred reading behavior to the same Sailthru profile.</li>
+      <li><b>One render pattern for the newsletter.</b> Send-time match combines the reader profile against the indexed content library.</li>
+      <li><b>The same architecture stands up</b> on every other Crain brand without rebuilding the spine.</li>
+    </ul>
+
+    <p class="src">Architecture reference. See <a href="#a2">A2</a>&ndash;<a href="#a10">A10</a> for the system-by-system breakdown of each lane.</p>
   </section>
 
-  <!-- ============ APPENDIX DIVIDER ============ -->
-  <div class="appendix-divider" id="flows">
-    <div class="appendix-rule"></div>
-    <h2 class="appendix-title">Appendix</h2>
-    <p class="appendix-deck">Baselines, end-to-end operational flows, and the decisions still to align on.</p>
+  <!-- ============ APPENDIX BREAK + TOC ============ -->
+  <div class="appx-break" id="appendix">
+    <h2>Appendix</h2>
+    <div class="sub">Today&rsquo;s baseline, end-to-end lifecycle for sponsor, reader, and editorial &mdash; current and future state &mdash; and the open scoping calls per workstream.</div>
 
-    <div class="appendix-toc">
-      <div class="appendix-col">
-        <div class="appendix-col-head">Baselines</div>
-        <a class="appendix-toc-item" href="#baselines">
-          <span class="toc-num">A1</span>
-          <span class="toc-title">Today&rsquo;s commitments and performance</span>
-        </a>
-      </div>
-      <div class="appendix-col">
-        <div class="appendix-col-head">Sponsor lifecycle</div>
-        <div class="appendix-subhead">Current state</div>
-        <a class="appendix-toc-item" href="#a2-1-sponsor-current">
-          <span class="toc-num">A2.1</span>
-          <span class="toc-title">End-to-end &mdash; today</span>
-        </a>
-        <div class="appendix-subhead is-future">Future state</div>
-        <a class="appendix-toc-item is-future" href="#a2-2-sponsor-future">
-          <span class="toc-num">A2.2</span>
-          <span class="toc-title">End-to-end &mdash; with packages</span>
-        </a>
-        <div class="appendix-subhead">Open</div>
-        <a class="appendix-toc-item" href="#a2-3-sponsor-questions">
-          <span class="toc-num">A2.3</span>
-          <span class="toc-title">Open questions</span>
-        </a>
-      </div>
-      <div class="appendix-col">
-        <div class="appendix-col-head">Reader lifecycle</div>
-        <div class="appendix-subhead">Current state</div>
-        <a class="appendix-toc-item" href="#a3-1-reader-current">
-          <span class="toc-num">A3.1</span>
-          <span class="toc-title">End-to-end &mdash; today</span>
-        </a>
-        <div class="appendix-subhead is-future">Future state</div>
-        <a class="appendix-toc-item is-future" href="#a3-2-reader-future">
-          <span class="toc-num">A3.2</span>
-          <span class="toc-title">End-to-end &mdash; with inferred signal</span>
-        </a>
-        <div class="appendix-subhead">Open</div>
-        <a class="appendix-toc-item" href="#a3-3-reader-questions">
-          <span class="toc-num">A3.3</span>
-          <span class="toc-title">Open questions</span>
-        </a>
-      </div>
-      <div class="appendix-col">
-        <div class="appendix-col-head">Editorial &amp; classification</div>
-        <div class="appendix-subhead">Current state</div>
-        <a class="appendix-toc-item" href="#a4-1-editorial-current">
-          <span class="toc-num">A4.1</span>
-          <span class="toc-title">Tagging, curation, vocabulary &mdash; today</span>
-        </a>
-        <div class="appendix-subhead is-future">Future state</div>
-        <a class="appendix-toc-item is-future" href="#a4-2-editorial-future">
-          <span class="toc-num">A4.2</span>
-          <span class="toc-title">Classifier + governed vocabulary</span>
-        </a>
-        <div class="appendix-subhead">Open</div>
-        <a class="appendix-toc-item" href="#a4-3-editorial-questions">
-          <span class="toc-num">A4.3</span>
-          <span class="toc-title">Open questions</span>
-        </a>
-      </div>
+    <div class="toc-grid">
+      <ul class="toc">
+        <li class="toc-group">Today&rsquo;s baseline</li>
+        <li><a href="#a1"><b>A1</b> Three documents describe Topic Takeover &mdash; none of them agree</a></li>
+      </ul>
+      <ul class="toc">
+        <li class="toc-group">Sponsor lifecycle</li>
+        <li><a href="#a2"><b>A2</b> Today &mdash; five systems, external vendor, hand-typed exclusions</a></li>
+        <li><a href="#a3"><b>A3</b> With packages &mdash; three systems, structural exclusivity</a></li>
+        <li><a href="#a4"><b>A4</b> Eight open questions</a></li>
+      </ul>
+      <ul class="toc">
+        <li class="toc-group">Reader lifecycle</li>
+        <li><a href="#a5"><b>A5</b> Today &mdash; three opt-in surfaces, follow &ne; subscribe</a></li>
+        <li><a href="#a6"><b>A6</b> With inferred signal &mdash; one opt-in equals subscription</a></li>
+        <li><a href="#a7"><b>A7</b> Six open scoping calls</a></li>
+      </ul>
+      <ul class="toc">
+        <li class="toc-group">Editorial &amp; classification</li>
+        <li><a href="#a8"><b>A8</b> Today &mdash; three parallel curation efforts, no source of truth</a></li>
+        <li><a href="#a9"><b>A9</b> With STAMP &mdash; editorial governs, classifier classifies</a></li>
+        <li><a href="#a10"><b>A10</b> Six open governance calls</a></li>
+      </ul>
     </div>
   </div>
 
-  <!-- ============ APPENDIX: TODAY'S COMMITMENTS AND PERFORMANCE ============ -->
-  <section class="section-card cmp-slide" id="baselines">
-    <div class="kicker"><span class="sec-num">A1</span> Baselines</div>
-    <h2>Today&rsquo;s commitments and performance</h2>
-    <p class="section-deck">What sponsors and readers get from these products today, and how they&rsquo;re performing.</p>
+  <!-- ============ BUCKET 1: TODAY'S BASELINE ============ -->
+  <div class="appx-bucket-break"><h4>Bucket 1 &middot; Today&rsquo;s baseline</h4></div>
 
-    <div class="cmp-preserved">
-      <div class="cmp-preserved-label">What sponsors get</div>
-      <ul>
-        <li>5,000 or 10,000 guaranteed monthly pageviews on matched articles</li>
-        <li>5,000 sends per e-blast, ~4 e-blasts over the campaign</li>
-        <li>5 sponsor positions in a custom topical newsletter</li>
-        <li>Full display takeover on matched article pages</li>
-        <li>Monthly performance report</li>
-        <li>3-, 4-, or 6-month minimum program length</li>
-      </ul>
+  <section class="appx" id="a1">
+    <div class="kicker"><span class="sec-num">A1</span>Source-of-truth problem</div>
+    <h3>Three documents describe the Topic Takeover. None of them agree.</h3>
+    <p class="lead">The 2026 media kit, the signed insertion order, and the customer-facing explainer each promise a different product. The widest gaps sit on editorial effort and newsletter framing. Alignment needed on the source of truth.</p>
+
+    <div class="sot-matrix">
+      <table class="sot-table">
+        <thead>
+          <tr>
+            <th scope="col">Deliverable</th>
+            <th scope="col">Media kit (p.18)</th>
+            <th scope="col">Signed IO</th>
+            <th scope="col">Customer explainer</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="sot-item">Newsletter product</td>
+            <td>&ldquo;Eblast series on the topical theme, highlighting your messaging alongside curated GenomeWeb content.&rdquo;</td>
+            <td>&ldquo;Four e-blasts (5,000 names per blast).&rdquo;</td>
+            <td>&ldquo;An exclusive custom newsletter&hellip; sponsored by you and featuring only your ads,&rdquo; with five sponsor ad positions.</td>
+          </tr>
+          <tr>
+            <td class="sot-item">Editorial review of included stories</td>
+            <td class="sot-silent">Silent.</td>
+            <td class="sot-silent">Silent.</td>
+            <td>Stories &ldquo;undergo a manual review by our custom content editor to ensure relevance.&rdquo;</td>
+          </tr>
+          <tr>
+            <td class="sot-item">Performance lift</td>
+            <td class="sot-silent">Silent.</td>
+            <td class="sot-silent">Silent.</td>
+            <td>Targeting &ldquo;significantly raising the open rate and ad engagement.&rdquo;</td>
+          </tr>
+          <tr>
+            <td class="sot-item">Guaranteed-serve SOV tag</td>
+            <td class="sot-silent">Silent.</td>
+            <td class="sot-silent">Silent.</td>
+            <td>One topic tag &ldquo;will always display your ads&rdquo; (framed as a QA/verification feature so the sponsor can reliably find their own ads).</td>
+          </tr>
+          <tr>
+            <td class="sot-item">Audience targeting methodology</td>
+            <td class="sot-silent">Silent.</td>
+            <td>Readers &ldquo;who have indicated an interest in the topical theme.&rdquo;</td>
+            <td>Readers &ldquo;who read stories with your topic tags more often than the average reader.&rdquo;</td>
+          </tr>
+          <tr>
+            <td class="sot-item">Program tier (sends / pageviews)</td>
+            <td class="sot-silent">No tiers named.</td>
+            <td>5,000 names, 5,000 pageviews.</td>
+            <td>&ldquo;5,000 or 7,500&rdquo; sends / &ldquo;5,000 or 10,000&rdquo; pageviews per month.</td>
+          </tr>
+          <tr>
+            <td class="sot-item">Newsletter-to-article continuity</td>
+            <td class="sot-silent">Silent.</td>
+            <td class="sot-silent">Silent.</td>
+            <td>Readers who click from the custom newsletter &ldquo;will always see your ads.&rdquo;</td>
+          </tr>
+          <tr>
+            <td class="sot-item">Source-agnostic pageview guarantee</td>
+            <td class="sot-silent">Silent.</td>
+            <td>5,000 monthly pageviews, silent on source.</td>
+            <td>Minimum pageview target guaranteed &ldquo;regardless of the source of traffic.&rdquo;</td>
+          </tr>
+          <tr>
+            <td class="sot-item">Newsletter content scope</td>
+            <td class="sot-silent">Silent.</td>
+            <td class="sot-silent">Silent.</td>
+            <td>&ldquo;Only stories tagged with your topic tags will be considered for the newsletter.&rdquo;</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
-    <div class="cmp-metrics-wrap">
-      <div class="cmp-metrics-eyebrow">Current Sponsor Takeover Campaigns</div>
-      <div class="cmp-metrics-strip">
-        <div class="metric">
-          <span class="metric-value">$4,254/mo</span>
-          <span class="metric-label">Standard unit price</span>
+    <div class="callout decision"><strong>Decide</strong> Is the explainer the source of truth (and the media kit + IO template need to catch up and reprice), or is it the sales collateral (and the explainer needs to be trimmed to what was actually sold)? Either direction is workable &mdash; staying in the middle is what produces unpriced editorial labor, unresolvable sponsor disputes, and ambiguity carried into the future-state migration.</div>
+
+    <div class="sot-today">
+      <div class="sot-today-head">Meanwhile &mdash; what sponsors and readers experience today</div>
+      <div class="sot-today-grid">
+        <div class="sot-today-block">
+          <div class="sot-tb-label">Sponsors</div>
+          <ul>
+            <li>Guaranteed monthly pageviews on matched article pages (5K today; 10K tier referenced in the explainer)</li>
+            <li>~4 e-blasts of 5,000 names each over the campaign</li>
+            <li>Five sponsor positions inside a custom topical newsletter</li>
+            <li>Full display takeover on matched article pages</li>
+            <li>Monthly performance report; 3-, 4-, or 6-month minimums</li>
+          </ul>
         </div>
-        <div class="metric">
-          <span class="metric-value">15</span>
-          <span class="metric-label">Active campaigns</span>
-        </div>
-        <div class="metric">
-          <span class="metric-value">10.9% / 2.76%</span>
-          <span class="metric-label">Sponsor newsletter (open / CTR)</span>
-        </div>
-        <div class="metric">
-          <span class="metric-value">10.0% / 1.5%</span>
-          <span class="metric-label">Flagship benchmark (open / CTR)</span>
+        <div class="sot-today-block">
+          <div class="sot-tb-label">Readers</div>
+          <ul>
+            <li>A newsletter with content matched to their stated interests</li>
+            <li>Daily delivery cadence</li>
+            <li>Topics under their own control</li>
+          </ul>
         </div>
       </div>
     </div>
 
-    <div class="cmp-preserved">
-      <div class="cmp-preserved-label">What readers experience</div>
-      <ul>
-        <li>A personalized daily brief, content matched to your interests</li>
-        <li>Daily delivery</li>
-        <li>Topics under your control</li>
-      </ul>
-    </div>
-
-    <div class="cmp-metrics-wrap">
-      <div class="cmp-metrics-eyebrow">Current My Topics readership</div>
-      <div class="cmp-metrics-strip">
-        <div class="metric">
-          <span class="metric-value">12,891</span>
-          <span class="metric-label">Stated followers in Sailthru</span>
-        </div>
-        <div class="metric">
-          <span class="metric-value">~625/day</span>
-          <span class="metric-label">Personalized sends</span>
-        </div>
-        <div class="metric">
-          <span class="metric-value">30.4% / 4.8%</span>
-          <span class="metric-label">Personalized send (open / CTR)</span>
-        </div>
-        <div class="metric">
-          <span class="metric-value">3&times; flagship</span>
-          <span class="metric-label">Engagement lift</span>
-        </div>
-      </div>
-    </div>
+    <p class="src">Sources: <em>GW-MediaKit-2026-C-9-25.pdf</em> p.18; <em>Topic Takeover Explainer.pdf</em>; <em>Hamamatsu 52984</em> signed IO (representative). Line-by-line verification in <code>working-docs/sales-ads-docs/topic-takeover-doc-gap-analysis.md</code>.</p>
   </section>
 
-  <!-- ============ A2.1 SPONSOR LIFECYCLE — CURRENT STATE ============ -->
-  <section class="section-card cmp-slide" id="a2-1-sponsor-current">
-    <div class="kicker"><span class="sec-num">A2.1</span> Sponsor lifecycle &middot; current state</div>
-    <h2 class="cmp-display-title">Sponsor lifecycle &mdash; end to end, today</h2>
-    <p class="cmp-deck">Five systems, five-plus handoffs, an external vendor in the critical path, single-operator risk on every send. The bridge between Sailthru and GAM today is a sponsor tag carried in the email link.</p>
+  <!-- ============ BUCKET 2: SPONSOR LIFECYCLE ============ -->
+  <div class="appx-bucket-break"><h4>Bucket 2 &middot; Sponsor lifecycle</h4></div>
+
+  <section class="appx" id="a2">
+    <div class="kicker"><span class="sec-num">A2</span>Sponsor lifecycle today</div>
+    <h3>Today&rsquo;s sponsor lifecycle runs through five systems, an external vendor, and ~90 hand-typed exclusion edits per launch.</h3>
+    <p class="lead">Five systems. Five-plus handoffs. External vendor in the critical path. Single-operator risk on every send. The Sailthru-to-GAM bridge is a sponsor tag carried in the email URL.</p>
 
     <div class="arch-diagram">
       <svg viewBox="0 0 1040 950" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="advTitle advDesc" preserveAspectRatio="xMidYMid meet">
@@ -1759,59 +1645,60 @@
       </svg>
     </div>
 
-    <div class="point">
-      <strong class="point-head">Setup &mdash; what gets built once per sponsor</strong>
+    <div class="method-block">
+      <div class="mb-head">Setup &mdash; what gets built once per sponsor</div>
       <ul>
-        <li>Sales hands the sponsor's tag list and flight dates to marketing automation. The same sales record has a parallel side-effect: it auto-generates draft ad slots in GAM that someone has to finish setting up.</li>
+        <li>Sales hands the sponsor&rsquo;s tag list and flight dates to marketing automation. The same sales record auto-generates draft GAM ad slots that someone has to finish setting up.</li>
         <li>Marketing automation builds a custom audience by hand &mdash; smart segment over 10&ndash;21 content tags with a hand-tuned interest threshold &mdash; plus a sponsor-specific email template, plus a client code in a one-off in-house tool that exists only for GenomeWeb.</li>
         <li>YourBow (external vendor) creates the actual delivering ad units in GAM. Ad ops then hand-types competitor exclusions onto each new ad unit &mdash; one inline list per unit, no central registry.</li>
       </ul>
     </div>
 
-    <div class="point">
-      <strong class="point-head">Per-send &mdash; what mutates every send</strong>
+    <div class="method-block">
+      <div class="mb-head">Per-send &mdash; what mutates every send</div>
       <ul>
-        <li>Marketing automation clones the sponsor's template for each dated send and carves a ~5,050-member audience from the parent list.</li>
-        <li>The parent list's segment is then mutated in place so the carve isn't re-mailed next cycle. The mutation persists, so the parent isn't actually a stable list at any point in time.</li>
+        <li>Marketing automation clones the template for each dated send and carves a ~5,050-member audience from the parent list.</li>
+        <li>The parent list&rsquo;s segment then mutates in place so the carve isn&rsquo;t re-mailed next cycle. The mutation persists; the parent isn&rsquo;t a stable list at any point in time.</li>
         <li>Carve lists are never deleted; per-send template clones accumulate cumulatively in Sailthru.</li>
-        <li><strong>Newsletter curation contrast.</strong> The Custom Content team independently picks 3&ndash;5 articles per recommendation slot per Topic Takeover send &mdash; manual, every send. The personalized daily brief (My Topics Daily) is 100% automated, with no editorial curation per send. Same content base, two very different operating models.</li>
+        <li><strong>Newsletter curation contrast.</strong> Custom Content picks 3&ndash;5 articles per recommendation slot per Topic Takeover send, manual every send. The newsletter is 100% automated. Same content base, two operating models.</li>
       </ul>
     </div>
 
-    <div class="point">
-      <strong class="point-head">Send-fire &mdash; the URL handshake</strong>
+    <div class="method-block">
+      <div class="mb-head">Send-fire &mdash; the URL handshake</div>
       <ul>
         <li>No shared registry between Sailthru and GAM. The bridge is the email link.</li>
         <li>Every link in the email carries a sponsor tag. The reader clicks; GAM reads the sponsor tag from the landing URL and takes over all 7 ad positions on the article page.</li>
-        <li>This is why competitor exclusion lives inside the GAM ad unit's targeting expression rather than as a Sailthru audience rule &mdash; the bridge is the URL, not a shared list.</li>
-        <li>If the URL parameter is wrong, mistyped, or stripped by an upstream link tracker, the takeover silently doesn't fire and the sponsor sees house ads instead. Nobody monitors for that failure mode.</li>
+        <li>Competitor exclusion lives inside the GAM ad unit&rsquo;s targeting expression, not as a Sailthru audience rule, because the bridge is the URL not a shared list.</li>
+        <li>If the URL parameter is wrong, mistyped, or stripped by an upstream link tracker, the takeover silently doesn&rsquo;t fire and the sponsor sees house ads. Nobody monitors for that failure mode.</li>
       </ul>
     </div>
 
-    <div class="point">
-      <strong class="point-head">Maintenance + reporting &mdash; the ongoing tax</strong>
+    <div class="method-block">
+      <div class="mb-head">Maintenance and reporting &mdash; the ongoing tax</div>
       <ul>
-        <li>Steady-state cost: every new sponsor launch makes ad ops hand-type the new sponsor name into every other live sponsor's exclusion list &mdash; up to ~90 edits per launch.</li>
-        <li>Visible drift between sponsor exclusion footprints (6 vs 1 in the same month) proves the sweep isn't always done.</li>
-        <li>Revenue Ops pulls a monthly impression and click report and forwards to the sponsor. Reporting is the cleanest part of the chain.</li>
+        <li>Steady-state cost: every new sponsor launch makes ad ops hand-type the new sponsor name into every other live sponsor&rsquo;s exclusion list &mdash; up to ~90 edits per launch.</li>
+        <li>Visible drift between sponsor exclusion footprints (6 vs 1 in the same month) proves the sweep isn&rsquo;t always done.</li>
+        <li>Revenue Ops pulls a monthly impression and click report and forwards to the sponsor.</li>
         <li>Billing reconciles in the sales system against the original record, not GAM. Canonical revenue per campaign requires a cross-reference.</li>
-        <li>~240 hours/year human labor on ~$1.1M declining revenue. The labor cost isn't large in absolute terms; the fragility tax is.</li>
+        <li>~240 hours/year human labor on ~$1.1M declining revenue. The labor cost isn&rsquo;t large in absolute terms; the fragility tax is.</li>
       </ul>
     </div>
 
-    <div class="note"><strong>Where the fragility lives:</strong> single operator on every per-send carve and template edit (sends stop if they're out) &middot; external vendor on every GAM ad unit with no internal backup &middot; the in-house S3 ads tool is GenomeWeb-only and undocumented &middot; competitor exclusion lives inline in GAM targeting rather than as a shared list (no source of truth) &middot; the parent audience mutates every send, so no version of any sponsor's audience is stable at any point in time.</div>
+    <div class="callout-muted"><strong>Where the fragility lives.</strong> Single operator on every per-send carve and template edit. External vendor on every GAM ad unit with no internal backup. The in-house S3 ads tool is GenomeWeb-only and undocumented. Competitor exclusion lives inline in GAM targeting rather than as a shared list. The parent audience mutates every send, so no version of any sponsor&rsquo;s audience is stable at any point in time.</div>
+
+    <p class="src">Sources: marketing automation ops audit; GAM line-item targeting export; sales record cross-reference. Pulled 04/2026. Universe: 15 active GenomeWeb sponsor campaigns + ~10 historical Topic Takeover sends (six-send open/CTR mean).</p>
   </section>
 
-  <!-- ============ A2.2 SPONSOR LIFECYCLE — FUTURE STATE ============ -->
-  <section class="section-card cmp-slide future-state" id="a2-2-sponsor-future">
-    <div class="kicker"><span class="sec-num">A2.2</span> Sponsor lifecycle &middot; future state <span class="future-tag">future state</span></div>
-    <h2 class="cmp-display-title">Sponsor lifecycle &mdash; with standing topic packages</h2>
-    <p class="cmp-deck">Three systems, two-to-three handoffs per campaign, no external vendor in the critical path, no per-send manual mutations. Article page key-values are the shared bridge between Sailthru and GAM.</p>
+  <section class="appx future" id="a3">
+    <div class="kicker"><span class="sec-num">A3</span>Sponsor lifecycle with packages</div>
+    <h3>Standing packages collapse the sponsor build to scheduling and creative upload, and competitor exclusivity becomes structural.</h3>
+    <p class="lead">Three systems. Two-to-three handoffs per campaign. No external vendor in the critical path. No per-send manual mutations. Page key-values bridge Sailthru and GAM.</p>
 
-    <div class="arch-diagram">
-      <svg viewBox="0 0 1040 570" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="advFutTitle advFutDesc" preserveAspectRatio="xMidYMid meet">
+    <div class="arch-diagram future">
+      <svg viewBox="0 0 1040 660" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="advFutTitle advFutDesc" preserveAspectRatio="xMidYMid meet">
         <title id="advFutTitle">Sponsor lifecycle &mdash; future state with packages</title>
-        <desc id="advFutDesc">Standing topic packages replace bespoke sponsor builds. Editorial publishes; STAMP classifies; the article page emits classifications as page key-values. Sailthru and GAM both read from the same key-values. Sponsor selects a package off the shelf; marketing automation schedules sends and uploads creative; competitor exclusivity is structural.</desc>
+        <desc id="advFutDesc">Standing topic packages replace bespoke sponsor builds. Editorial publishes; STAMP classifies; the article page emits classifications as page key-values. Sailthru and GAM both read from the same key-values. Sailthru's send-time match auto-selects articles against the package vocabulary; GAM matches the takeover line item via the ad call. Sponsor selects a package off the shelf; marketing automation schedules sends and uploads creative; competitor exclusivity is structural.</desc>
 
         <defs>
           <marker id="arr-fA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto">
@@ -1899,119 +1786,108 @@
           </text>
         </g>
 
-        <line class="arch-arrow arch-arrow-strong" x1="375" y1="475" x2="375" y2="498" marker-end="url(#arr-fA-acc)"/>
-        <line class="arch-arrow arch-arrow-strong" x1="625" y1="475" x2="625" y2="498" marker-end="url(#arr-fA-acc)"/>
+        <line class="arch-arrow" x1="375" y1="475" x2="375" y2="498" marker-end="url(#arr-fA)"/>
+        <text class="arch-arrow-label" x="385" y="492">indexed articles</text>
 
-        <text class="arch-phase-header" x="20" y="490">Output</text>
+        <text class="arch-phase-header" x="20" y="490">Newsletter</text>
 
         <g>
-          <rect class="arch-rect-out" x="270" y="500" width="210" height="60" rx="4"/>
-          <text class="arch-system arch-system-out" x="284" y="525">Sponsor newsletter delivered</text>
-          <text class="arch-action arch-action-out" y="545">
+          <rect class="arch-rect" x="270" y="500" width="210" height="60" rx="4"/>
+          <text class="arch-system" x="284" y="524">Sailthru send-time match</text>
+          <text class="arch-action" y="544">
+            <tspan x="284" dy="0">Articles auto-match to package</tspan>
+            <tspan x="284" dy="14">vocabulary at send time.</tspan>
+          </text>
+        </g>
+
+        <line class="arch-arrow arch-arrow-strong" x1="375" y1="560" x2="375" y2="583" marker-end="url(#arr-fA-acc)"/>
+        <line class="arch-arrow arch-arrow-strong" x1="625" y1="475" x2="625" y2="583" marker-end="url(#arr-fA-acc)"/>
+        <text class="arch-arrow-label" x="635" y="525">ad call match</text>
+
+        <text class="arch-phase-header" x="20" y="575">Output</text>
+
+        <g>
+          <rect class="arch-rect-out" x="270" y="585" width="210" height="60" rx="4"/>
+          <text class="arch-system arch-system-out" x="284" y="610">Sponsor newsletter delivered</text>
+          <text class="arch-action arch-action-out" y="630">
             <tspan x="284" dy="0">Stable package audience.</tspan>
           </text>
         </g>
         <g>
-          <rect class="arch-rect-out" x="520" y="500" width="210" height="60" rx="4"/>
-          <text class="arch-system arch-system-out" x="534" y="525">Display takeover served</text>
-          <text class="arch-action arch-action-out" y="545">
+          <rect class="arch-rect-out" x="520" y="585" width="210" height="60" rx="4"/>
+          <text class="arch-system arch-system-out" x="534" y="610">Display takeover served</text>
+          <text class="arch-action arch-action-out" y="630">
             <tspan x="534" dy="0">All 7 positions on matched articles.</tspan>
           </text>
         </g>
       </svg>
     </div>
 
-    <div class="point">
-      <strong class="point-head">What changes structurally</strong>
+    <div class="method-block">
+      <div class="mb-head">What changes structurally</div>
       <ul>
         <li><strong>Bespoke per-sponsor assembly retires.</strong> Standing packages mean one pre-tuned audience and one reusable template per package, not per sponsor.</li>
-        <li><strong>External vendor exits the critical path.</strong> Pre-built packages don't need bespoke per-campaign ad-unit creation in GAM.</li>
+        <li><strong>External vendor exits the critical path.</strong> Pre-built packages don&rsquo;t need bespoke per-campaign ad-unit creation in GAM.</li>
         <li><strong>Competitor exclusivity becomes structural.</strong> A package has one occupant at a time, by definition. The hand-typed exclusion list goes away with it.</li>
         <li><strong>The Sailthru-to-GAM bridge moves from URL handshake to shared page key-values.</strong> One source of truth for both consumers.</li>
-        <li><strong>Per-send work for marketing automation collapses</strong> to scheduling and creative upload. Single-operator risk dissolves as a consequence of removing the bespoke process.</li>
+        <li><strong>Per-send work for marketing automation collapses</strong> to scheduling and creative upload. Single-operator risk dissolves as a consequence.</li>
       </ul>
     </div>
 
-    <div class="point">
-      <strong class="point-head">Newsletter curation &mdash; explicit shift</strong>
+    <div class="method-block">
+      <div class="mb-head">Newsletter curation &mdash; explicit shift</div>
       <ul>
-        <li><strong>Package-level editorial ownership replaces ad-hoc per-campaign curation.</strong> Editorial judgment lives where it matters &mdash; at the package level, in shaping what the package is and what it commits to &mdash; not in per-send manual article picks.</li>
-        <li>No per-send Custom Content layer for sponsor sends. Article matching against the package's vocabulary is automated, the same way the personalized brief works today.</li>
-        <li>Editorial input is preserved at the points where it adds genuine value: vocabulary governance and package definition. See A4.2 for the editorial-side picture.</li>
+        <li>Package-level editorial ownership replaces ad-hoc per-campaign curation. Editorial judgment lives where it matters: shaping what the package is and what it commits to.</li>
+        <li>No per-send Custom Content layer for sponsor sends. Article matching against the package&rsquo;s vocabulary is automated, the same way the newsletter works today.</li>
+        <li>Editorial input is preserved at vocabulary governance and package definition. See <a href="#a9">A9</a> for the editorial-side picture.</li>
       </ul>
     </div>
 
-    <div class="point">
-      <strong class="point-head">What the sponsor still gets &mdash; unchanged</strong>
+    <div class="method-block">
+      <div class="mb-head">What the sponsor still gets &mdash; unchanged</div>
       <ul>
         <li>Same deliverables: monthly pageviews, e-blasts to readers interested in the topic, monthly report.</li>
-        <li>Same standing in the article inventory: full takeover on the package's matched articles.</li>
+        <li>Same standing in the article inventory: full takeover on the package&rsquo;s matched articles.</li>
         <li>Same pricing structure (per the rate-card direction toward time-based packages, not pageview-based commitments).</li>
-        <li>Verification surface preserved &mdash; sponsors can still see their topic landing in the wild.</li>
+        <li>Verification surface preserved &mdash; sponsors still see their topic landing in the wild.</li>
         <li><strong>Mid-flight transition:</strong> every signed flight completes under current mechanics. New sponsors sell into packages. No active campaign is disrupted.</li>
       </ul>
     </div>
 
-    <div class="note"><strong>What's deliberately not committed in this slide:</strong> exact package count, which current campaigns map to which packages, package pricing tiers. These get defined in a 2&ndash;3 week sprint with editorial and sales after architectural alignment. See A2.3 for the open questions.</div>
+    <div class="callout-muted"><strong>Deliberately not committed in this slide.</strong> Exact package count, which current campaigns map to which packages, package pricing tiers. These get defined in a 2&ndash;3 week sprint with editorial and sales after architectural alignment. See <a href="#a4">A4</a> for the open questions.</div>
+
+    <p class="src">Architecture reference. Mechanics referenced from internal STAMP design docs and Sailthru/GAM integration spec. Pulled 04/2026.</p>
   </section>
 
-  <!-- ============ A2.3 SPONSOR LIFECYCLE — OPEN QUESTIONS ============ -->
-  <section class="section-card" id="a2-3-sponsor-questions">
-    <div class="kicker"><span class="sec-num">A2.3</span> Sponsor lifecycle &middot; open questions</div>
-    <h2>Open questions for the sponsor workstream</h2>
-    <p class="section-deck">Each item is a question and, where applicable, a tentative direction. Most are scoping conversations, not blockers.</p>
+  <section class="appx" id="a4">
+    <div class="kicker"><span class="sec-num">A4</span>Sponsor open questions</div>
+    <h3>The sponsor workstream&rsquo;s eight open questions are scoping conversations, not architecture blockers.</h3>
+    <p class="lead">Each item is a question and, where applicable, a tentative direction. Most resolve in 2&ndash;3 week working sessions with editorial, sales, and ad ops.</p>
 
-    <div class="point">
-      <strong class="point-head">Package count and structure</strong>
-      <p class="point-prose">Tentative direction: start from today's standing topical newsletters as the package shelf. 2&ndash;3 week working group with editorial and sales to define count, contents, and naming.</p>
-    </div>
-
-    <div class="point">
-      <strong class="point-head">Mapping current campaigns to packages</strong>
-      <p class="point-prose">Tentative direction: each current sponsor's tag list maps to whichever package's topic best fits. Sales and editorial co-own the mapping rules. Drafted alongside package definitions.</p>
-    </div>
-
-    <div class="point">
-      <strong class="point-head">Package pricing tiers</strong>
-      <p class="point-prose">Tentative direction: the internal rate card already directs the move from pageview-based to time-based pricing. Existing standard monthly unit holds through transition. Revenue Ops carries the detailed pricing pass.</p>
-    </div>
-
-    <div class="point">
-      <strong class="point-head">Mid-flight grandfathering</strong>
-      <p class="point-prose">Tentative direction: every signed flight completes under current mechanics. New flights sell into packages. No contract renegotiation. Settled in principle; needs a simple ops rule for ad ops on which flights they're maintaining the old way and for how long.</p>
-    </div>
-
-    <div class="point">
-      <strong class="point-head">Cross-package competitor co-scheduling</strong>
-      <p class="point-prose">Within a package, exclusivity is automatic. Open: whether a thin policy is needed across packages (e.g., "do not co-schedule these two sponsors across packages in the same month"). Ad-ops governance call for a later scoping pass.</p>
-    </div>
-
-    <div class="point">
-      <strong class="point-head">Sponsor perception of the topic landing page</strong>
-      <p class="point-prose">Sponsors today use the topic page as a verification surface ("my campaign is real and live"). Open: whether the surface needs preservation as-is, can simplify, or migrates to a sponsor-facing dashboard. Sales-led check with sponsors.</p>
-    </div>
-
-    <div class="point">
-      <strong class="point-head">SLA for creative upload to send go-live</strong>
-      <p class="point-prose">Under bespoke assembly today, lead time is whatever the operator can manage. Under packages, a standard lead-time commitment becomes possible. Sales will want to know what it is.</p>
-    </div>
-
-    <div class="point">
-      <strong class="point-head">Headcount and ops design under packages</strong>
-      <p class="point-prose">Open: whether the marketing automation function reshapes around package count, and what the right operator load looks like once bespoke per-sponsor assembly retires. Affects staffing plans.</p>
-    </div>
+    <ul class="data-bullets">
+      <li><b>Package count and structure.</b> Tentative: start from today&rsquo;s standing topical newsletters as the package shelf. 2&ndash;3 week working group with editorial and sales to define count, contents, and naming.</li>
+      <li><b>Mapping current campaigns to packages.</b> Tentative: each current sponsor&rsquo;s tag list maps to whichever package&rsquo;s topic best fits. Sales and editorial co-own the mapping rules.</li>
+      <li><b>Package pricing tiers.</b> Tentative: the internal rate card already directs the move from pageview-based to time-based pricing. Existing standard monthly unit holds through transition. Revenue Ops carries the detailed pricing pass.</li>
+      <li><b>Mid-flight grandfathering.</b> Tentative: every signed flight completes under current mechanics. New flights sell into packages. No contract renegotiation. Needs a simple ops rule for ad ops on which flights they&rsquo;re maintaining the old way and for how long.</li>
+      <li><b>Cross-package competitor co-scheduling.</b> Within a package, exclusivity is automatic. Open: whether a thin policy is needed across packages. Ad-ops governance call for a later scoping pass.</li>
+      <li><b>Sponsor perception of the topic landing page.</b> Sponsors today use the topic page as a verification surface. Open: whether the surface needs preservation, can simplify, or migrates to a sponsor-facing dashboard. Sales-led check.</li>
+      <li><b>SLA for creative upload to send go-live.</b> Under bespoke assembly today, lead time is whatever the operator can manage. Under packages, a standard lead-time commitment becomes possible. Sales will want a number.</li>
+      <li><b>Headcount and ops design under packages.</b> Open: whether the marketing automation function reshapes around package count, and what the right operator load looks like once bespoke per-sponsor assembly retires. Affects staffing plans.</li>
+    </ul>
   </section>
 
-  <!-- ============ A3.1 READER LIFECYCLE — CURRENT STATE ============ -->
-  <section class="section-card cmp-slide" id="a3-1-reader-current">
-    <div class="kicker"><span class="sec-num">A3.1</span> Reader lifecycle &middot; current state</div>
-    <h2 class="cmp-display-title">Reader lifecycle &mdash; opt-in, storage, delivery</h2>
-    <p class="cmp-deck">Three opt-in surfaces feed an unbounded follow array, but following a topic does not subscribe to the newsletter. That seam is the structural reason ~12,900 followers translate to ~625 daily sends.</p>
+  <!-- ============ BUCKET 3: READER LIFECYCLE ============ -->
+  <div class="appx-bucket-break"><h4>Bucket 3 &middot; Reader lifecycle</h4></div>
+
+  <section class="appx" id="a5">
+    <div class="kicker"><span class="sec-num">A5</span>Reader lifecycle today</div>
+    <h3>Three opt-in surfaces feed an unbounded follow array, but following a topic does not subscribe to the newsletter &mdash; which is why ~12,900 followers translate to ~625 daily sends.</h3>
+    <p class="lead">Three opt-in surfaces. One unbounded follow array. A separate yes/no flag is the sole gate on the daily send. The send-time match is 100% automated and runs only inside Sailthru&rsquo;s UI.</p>
 
     <div class="arch-diagram">
       <svg viewBox="0 0 1040 740" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="rdrTitle rdrDesc" preserveAspectRatio="xMidYMid meet">
         <title id="rdrTitle">Reader lifecycle today &mdash; opt-in and delivery</title>
-        <desc id="rdrDesc">Readers opt into topics from three separate surfaces. Each follow writes to an unbounded array on the user record. Newsletter subscription runs on a separate flag &mdash; following a topic does not enroll the reader in the newsletter, which is why ~12,900 stated followers reduce to ~625 recipients per send. Editorial publishes articles into Drupal which pushes per-save into the Sailthru content index. At send time, Sailthru renders a personalized brief by matching content against each subscriber's accumulated tag-interest signal &mdash; 100% automated, no editorial curation per send.</desc>
+        <desc id="rdrDesc">Readers opt into topics from three separate surfaces. Each follow writes to an unbounded array on the user record. Newsletter subscription runs on a separate flag &mdash; following a topic does not enroll the reader in the newsletter, which is why ~12,900 stated followers reduce to ~625 recipients per send. Editorial publishes articles into Drupal which pushes per-save into the Sailthru content index. At send time, Sailthru renders a newsletter by matching content against each subscriber's accumulated tag-interest signal &mdash; 100% automated, no editorial curation per send.</desc>
 
         <defs>
           <marker id="arr-tR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto">
@@ -2098,7 +1974,7 @@
           <text class="arch-warn-tag" x="284" y="310" text-anchor="end">separate opt-in</text>
           <text class="arch-system" x="34" y="333">Reader &mdash; second action</text>
           <text class="arch-action" y="353">
-            <tspan x="34" dy="0">Subscribes to the daily brief via</tspan>
+            <tspan x="34" dy="0">Subscribes to the newsletter via</tspan>
             <tspan x="34" dy="14">a newsletter onboarding flow.</tspan>
           </text>
         </g>
@@ -2139,7 +2015,7 @@
 
         <g>
           <rect class="arch-rect-out" x="290" y="645" width="460" height="80" rx="4"/>
-          <text class="arch-system arch-system-out" x="520" y="672" text-anchor="middle">Personalized daily brief delivered</text>
+          <text class="arch-system arch-system-out" x="520" y="672" text-anchor="middle">Newsletter delivered</text>
           <text class="arch-action arch-action-out" y="692" text-anchor="middle">
             <tspan x="520" dy="0">~625 recipients/day &middot; 30.4% open / 4.8% CTR (~190 opens/day)</tspan>
             <tspan x="520" dy="14">~3&times; flagship engagement on the same content base</tspan>
@@ -2149,8 +2025,8 @@
       </svg>
     </div>
 
-    <div class="point">
-      <strong class="point-head">Three opt-in surfaces, one storage layer</strong>
+    <div class="method-block">
+      <div class="mb-head">Three opt-in surfaces, one storage layer</div>
       <ul>
         <li>All three follow surfaces (preferences UI 85%, topic landing page 9%, article page 6%) write to the same follow array on the Sailthru user record.</li>
         <li>No auto-assignment. Every follow is a deliberate click.</li>
@@ -2159,47 +2035,48 @@
       </ul>
     </div>
 
-    <div class="point">
-      <strong class="point-head">The newsletter-subscription seam &mdash; the structural gap</strong>
+    <div class="method-block">
+      <div class="mb-head">The newsletter-subscription seam &mdash; the structural gap</div>
       <ul>
         <li>Following a topic does <strong>not</strong> subscribe the reader to the daily newsletter. Newsletter subscription is a separate action that writes a single yes/no on the user profile.</li>
-        <li>The daily brief audience is gated entirely on that flag. No tag filtering inside the segment itself; the matching happens at send time against the follow array.</li>
+        <li>The newsletter audience is gated entirely on that flag. No tag filtering inside the segment itself; matching happens at send time against the follow array.</li>
         <li>Quantified gap: 12,891 stated followers &rarr; 2,181 emailable &rarr; 625 active-tier recipients per send.</li>
         <li>This is the gap to close in the future state &mdash; one opt-in that subscribes the reader by definition.</li>
       </ul>
     </div>
 
-    <div class="point">
-      <strong class="point-head">Editorial &rarr; content index &mdash; the parallel pipeline</strong>
+    <div class="method-block">
+      <div class="mb-head">Editorial &rarr; content index &mdash; the parallel pipeline</div>
       <ul>
         <li>On every article publish, the editor hand-assigns a primary topic plus secondary topics from the shared 3,000-term Drupal vocabulary.</li>
         <li>Drupal pushes the article and its tags into the Sailthru content index per save. Push is capped at 15 tags per article. The cap goes away in Arc.</li>
-        <li>The content index is the corpus every sponsor sends and every personalized brief filter against.</li>
+        <li>The content index is the corpus every sponsor send and every newsletter filter against.</li>
       </ul>
     </div>
 
-    <div class="point">
-      <strong class="point-head">Send-time match &mdash; the 100% automated path</strong>
+    <div class="method-block">
+      <div class="mb-head">Send-time match &mdash; the 100% automated path</div>
       <ul>
-        <li>Each subscriber gets a uniquely assembled email. Sailthru matches content-index articles against the reader's accumulated tag-interest signal (months of reading history).</li>
-        <li><strong>Newsletter curation contrast.</strong> The daily brief is fully automated &mdash; no editorial picking per send. The Topic Takeover sponsor sends use the same automated tag-filtered feed but layer manual editorial picks (3&ndash;5 per slot) on top. Same pipeline, two operating models.</li>
-        <li>The match logic lives only in Sailthru's UI &mdash; not introspectable from outside. Any upstream schema change that breaks the match silently degrades personalization without alerting anyone.</li>
+        <li>Each subscriber gets a uniquely assembled email. Sailthru matches content-index articles against the reader&rsquo;s accumulated tag-interest signal (months of reading history).</li>
+        <li><strong>Newsletter curation contrast.</strong> The newsletter is fully automated. Topic Takeover sponsor sends use the same automated tag-filtered feed but layer manual editorial picks (3&ndash;5 per slot) on top. Same pipeline, two operating models.</li>
+        <li>The match logic lives only in Sailthru&rsquo;s UI &mdash; not introspectable from outside. Any upstream schema change that breaks the match silently degrades personalization without alerting anyone.</li>
       </ul>
     </div>
 
-    <div class="note"><strong>Why on-site doesn't carry the value:</strong> 87.5% of preferences-UI visitors are one-and-done over 90d &middot; readers configure once and consume via email &middot; the on-site feed is a setup tool, not a destination &mdash; which is why the future state retires the topic-page and article-page follow buttons but keeps the preferences UI as the single opt-in surface.<br><br><strong>Acquisition is collapsing:</strong> new active signups Jan&nbsp;2026: 11 &middot; Feb: 9 &middot; Mar: 8 &middot; Apr MTD: 2. The product is running on accumulated follow base, not fresh growth.</div>
+    <div class="callout-muted"><strong>Why on-site doesn&rsquo;t carry the value.</strong> 87.5% of preferences-UI visitors are one-and-done over 90d. Readers configure once and consume via email. The on-site feed is a setup tool, not a destination &mdash; which is why the future state retires the topic-page and article-page follow buttons but keeps the preferences UI as the single opt-in surface.<br><br><strong>Acquisition is collapsing.</strong> New active signups Jan 2026: 11. Feb: 9. Mar: 8. Apr MTD: 2. The product is running on accumulated follow base, not fresh growth.</div>
+
+    <p class="src">Sources: Sailthru user records and send logs; on-site preferences-UI analytics; Drupal taxonomy export. Pulled 04/2026. Universe: GenomeWeb stated followers (n = 12,891), emailable (n = 2,181), active-tier recipients/day (n = 625).</p>
   </section>
 
-  <!-- ============ A3.2 READER LIFECYCLE — FUTURE STATE ============ -->
-  <section class="section-card cmp-slide future-state" id="a3-2-reader-future">
-    <div class="kicker"><span class="sec-num">A3.2</span> Reader lifecycle &middot; future state <span class="future-tag">future state</span></div>
-    <h2 class="cmp-display-title">Reader lifecycle &mdash; with inferred signal layering</h2>
-    <p class="cmp-deck">One opt-in surface. One channel. Automated relevance that improves with use. Editorial role in the per-send picture: zero.</p>
+  <section class="appx future" id="a6">
+    <div class="kicker"><span class="sec-num">A6</span>Reader lifecycle with inferred signal</div>
+    <h3>One opt-in subscribes the reader; inferred signals layer onto explicit preferences without reader action.</h3>
+    <p class="lead">One opt-in surface. One channel. Automated relevance that improves with use. Editorial role in the per-send picture: zero.</p>
 
-    <div class="arch-diagram">
+    <div class="arch-diagram future">
       <svg viewBox="0 0 1040 580" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="rdrFutTitle rdrFutDesc" preserveAspectRatio="xMidYMid meet">
         <title id="rdrFutTitle">Reader lifecycle &mdash; future state</title>
-        <desc id="rdrFutDesc">Reader configures topics once via the preferences UI. The act of opting in subscribes the reader to the daily brief. Junction passthrough writes inferred signals from reading behavior to the same profile. STAMP classifies every article as it publishes. Sailthru renders the brief by matching STAMP-classified articles against the explicit + inferred profile. Fully automated.</desc>
+        <desc id="rdrFutDesc">Reader configures topics once via the preferences UI. The act of opting in subscribes the reader to the newsletter. Junction passthrough writes inferred signals from reading behavior to the same profile. STAMP classifies every article as it publishes. Sailthru renders the newsletter by matching STAMP-classified articles against the explicit + inferred profile. Fully automated.</desc>
 
         <defs>
           <marker id="arr-fR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto">
@@ -2222,7 +2099,7 @@
           <text class="arch-action" y="109">
             <tspan x="34" dy="0">Reader configures topics from a</tspan>
             <tspan x="34" dy="14">curated list. The single act of</tspan>
-            <tspan x="34" dy="14">opt-in subscribes to the brief.</tspan>
+            <tspan x="34" dy="14">opt-in subscribes to the newsletter.</tspan>
           </text>
         </g>
 
@@ -2277,7 +2154,7 @@
           <text class="arch-action arch-action-conv" y="372" text-anchor="middle">
             <tspan x="520" dy="0">STAMP-classified articles match against each reader's combined profile (explicit + inferred).</tspan>
             <tspan x="520" dy="16">Top-N digest assembled per recipient. Editorial role in this phase: zero. Same automated</tspan>
-            <tspan x="520" dy="16">render pattern that powers the brief today, on a richer signal.</tspan>
+            <tspan x="520" dy="16">render pattern that powers the newsletter today, on a richer signal.</tspan>
           </text>
         </g>
 
@@ -2287,7 +2164,7 @@
 
         <g>
           <rect class="arch-rect-out" x="290" y="480" width="460" height="80" rx="4"/>
-          <text class="arch-system arch-system-out" x="520" y="507" text-anchor="middle">Personalized daily brief delivered</text>
+          <text class="arch-system arch-system-out" x="520" y="507" text-anchor="middle">Newsletter delivered</text>
           <text class="arch-action arch-action-out" y="527" text-anchor="middle">
             <tspan x="520" dy="0">One opt-in. One channel. No follow-array maintenance burden.</tspan>
             <tspan x="520" dy="14">Relevance evolves with reading behavior; emerging topics earn their way in.</tspan>
@@ -2297,85 +2174,62 @@
       </svg>
     </div>
 
-    <div class="point">
-      <strong class="point-head">What changes for the reader</strong>
+    <div class="method-block">
+      <div class="mb-head">What changes for the reader</div>
       <ul>
         <li><strong>One opt-in surface.</strong> The preferences UI stays. Topic-page and article-page follow buttons retire; the on-site topic feed retires as a consumption surface.</li>
-        <li><strong>Opt-in equals subscription.</strong> The seam between following a topic and subscribing to the brief closes. No second action required.</li>
-        <li><strong>The reader doesn't maintain a follow list.</strong> Explicit preferences anchor the floor; inferred signals from reading behavior expand the ceiling automatically.</li>
+        <li><strong>Opt-in equals subscription.</strong> The seam between following a topic and subscribing to the newsletter closes. No second action required.</li>
+        <li><strong>The reader doesn&rsquo;t maintain a follow list.</strong> Explicit preferences anchor the floor; inferred signals from reading behavior expand the ceiling automatically.</li>
         <li><strong>Same delivery channel, same engagement profile.</strong> Newsletter remains the consumption surface; ~3&times; flagship engagement carries forward.</li>
       </ul>
     </div>
 
-    <div class="point">
-      <strong class="point-head">How the two signal layers combine</strong>
+    <div class="method-block">
+      <div class="mb-head">How the two signal layers combine</div>
       <ul>
-        <li><strong>Explicit preferences anchor the floor.</strong> If a reader has opted into a topic, that topic stays in scope regardless of behavior.</li>
-        <li><strong>Inferred signals expand the ceiling.</strong> Topics the reader consistently engages with rise in ranking even without an explicit follow. Emerging topics can earn their way in without requiring discovery first.</li>
+        <li><strong>Explicit preferences anchor the floor.</strong> Opted-in topics stay in scope regardless of behavior.</li>
+        <li><strong>Inferred signals expand the ceiling.</strong> Topics the reader consistently engages with rise in ranking even without an explicit follow. Emerging topics earn their way in without requiring discovery first.</li>
         <li><strong>Recency and decay become available.</strong> Inferred signals carry timestamps; stale behavioral interest can decay. Explicit follows still require affirmative removal.</li>
         <li><strong>Junction passthrough does the wiring.</strong> The gateway between Arc and Sailthru already accepts arbitrary profile writes. No new gateway engineering.</li>
       </ul>
     </div>
 
-    <div class="point">
-      <strong class="point-head">What stays the same on the Sailthru side</strong>
+    <div class="method-block">
+      <div class="mb-head">What stays the same on the Sailthru side</div>
       <ul>
         <li>The send-time match pattern is unchanged: render against the reader profile, filter the content index, top-N digest per recipient.</li>
-        <li>The delivery channel is unchanged: daily brief email.</li>
+        <li>The delivery channel is unchanged: newsletter email.</li>
         <li>What changes is the signal on the profile (richer) and the source of classifications (STAMP via page key-values, not Drupal-pushed tags).</li>
       </ul>
     </div>
 
-    <div class="note"><strong>Cross-brand pattern:</strong> the same architecture &mdash; preferences UI + inferred signals + STAMP-classified content + newsletter delivery &mdash; supports a personalized brief on any Crain brand. GenomeWeb is wave 1.</div>
+    <div class="callout-muted"><strong>Cross-brand pattern.</strong> The same architecture &mdash; preferences UI + inferred signals + STAMP-classified content + newsletter delivery &mdash; supports a newsletter on any Crain brand. GenomeWeb is wave 1.</div>
+
+    <p class="src">Architecture reference. Mechanics referenced from Junction passthrough spec and Sailthru profile schema. Pulled 04/2026.</p>
   </section>
 
-  <!-- ============ A3.3 READER LIFECYCLE — OPEN QUESTIONS ============ -->
-  <section class="section-card" id="a3-3-reader-questions">
-    <div class="kicker"><span class="sec-num">A3.3</span> Reader lifecycle &middot; open questions</div>
-    <h2>Open questions for the reader workstream</h2>
-    <p class="section-deck">Each item is a question and, where applicable, a tentative direction. Most are scoping calls, not blockers.</p>
+  <section class="appx" id="a7">
+    <div class="kicker"><span class="sec-num">A7</span>Reader open questions</div>
+    <h3>The reader workstream&rsquo;s six open questions are UX and signal-tuning calls, not architecture blockers.</h3>
+    <p class="lead">Each item is a question and, where applicable, a tentative direction. Closing the follower-vs-subscriber seam is the only architectural outcome.</p>
 
-    <div class="point">
-      <strong class="point-head">Weighting and decay between explicit and inferred signals</strong>
-      <p class="point-prose">Tentative direction: explicit preferences anchor the floor (never overridden); inferred signals layer on top with recency-aware ranking. Tuning the blend lives in the preferences-UI workstream with engineering and product.</p>
-    </div>
-
-    <div class="point">
-      <strong class="point-head">Which reading events count as inferred signal</strong>
-      <p class="point-prose">Open: click-through, full open, scroll depth, repeat visits, on-site dwell. Function of what Arc's page emission exposes and what the reader-privacy posture allows. Engineering scoping with privacy review.</p>
-    </div>
-
-    <div class="point">
-      <strong class="point-head">Transparency to the reader of inferred interests</strong>
-      <p class="point-prose">Open: whether the UI surfaces inferred interests back ("we noticed you're reading a lot about X &mdash; follow?"). UX decision; affects perceived trust, not the underlying mechanic.</p>
-    </div>
-
-    <div class="point">
-      <strong class="point-head">Cold start for new subscribers</strong>
-      <p class="point-prose">Open: whether the brief leans harder on explicit preferences during onboarding, falls back to flagship-style editorial picks until inferred signal accumulates, or both. Delivery-logic call.</p>
-    </div>
-
-    <div class="point">
-      <strong class="point-head">Opt-in experience</strong>
-      <p class="point-prose">It's an opt-in service. The end-to-end opt-in experience &mdash; surface, copy, sequencing, where the prompt lands &mdash; still needs work with marketing and product. Closing the follower-vs-subscriber seam is the outcome.</p>
-    </div>
-
-    <div class="point">
-      <strong class="point-head">Rename "My Topics" to "Personalized Daily Brief"</strong>
-      <p class="point-prose">Tentative direction: rename to align with the experience. Pure marketing call; architecture is the same regardless of name.</p>
-    </div>
-
-    <div class="point">
-      <strong class="point-head">Topic landing page disposition</strong>
-      <p class="point-prose">Open: whether the page persists for SEO and sponsor verification value or simplifies into a sponsor-facing dashboard. Sales-led check with sponsors paired with editorial input on SEO impact.</p>
-    </div>
+    <ul class="data-bullets">
+      <li><b>Weighting and decay between explicit and inferred signals.</b> Tentative: explicit preferences anchor the floor (never overridden); inferred signals layer on top with recency-aware ranking. Tuning the blend lives in the preferences-UI workstream with engineering and product.</li>
+      <li><b>Which reading events count as inferred signal.</b> Open: click-through, full open, scroll depth, repeat visits, on-site dwell. Function of what Arc&rsquo;s page emission exposes and what reader-privacy posture allows. Engineering scoping with privacy review.</li>
+      <li><b>Transparency to the reader of inferred interests.</b> Open: whether the UI surfaces inferred interests back ("we noticed you&rsquo;re reading a lot about X &mdash; follow?"). UX decision; affects perceived trust, not the underlying mechanic.</li>
+      <li><b>Cold start for new subscribers.</b> Open: whether the newsletter leans harder on explicit preferences during onboarding, falls back to flagship-style editorial picks until inferred signal accumulates, or both. Delivery-logic call.</li>
+      <li><b>Opt-in experience.</b> End-to-end opt-in experience &mdash; surface, copy, sequencing, where the prompt lands &mdash; still needs work with marketing and product. Closing the follower-vs-subscriber seam is the outcome.</li>
+      <li><b>Topic landing page disposition.</b> Open: whether the page persists for SEO and sponsor verification value, or simplifies into a sponsor-facing dashboard. Sales-led check with sponsors paired with editorial input on SEO impact.</li>
+    </ul>
   </section>
 
-  <!-- ============ A4.1 EDITORIAL + CLASSIFICATION — CURRENT STATE ============ -->
-  <section class="section-card cmp-slide" id="a4-1-editorial-current">
-    <div class="kicker"><span class="sec-num">A4.1</span> Editorial &amp; classification &middot; current state</div>
-    <h2 class="cmp-display-title">Editorial &amp; classification &mdash; tagging, curation, vocabulary today</h2>
-    <p class="cmp-deck">A 3,000-term shared vocabulary maintained by hand, three parallel curated lists that overlap imperfectly, and a per-send manual editorial layer on the sponsor side. No approval step, no retirement workflow, no single source of truth for what the product recognizes.</p>
+  <!-- ============ BUCKET 4: EDITORIAL & CLASSIFICATION ============ -->
+  <div class="appx-bucket-break"><h4>Bucket 4 &middot; Editorial &amp; classification</h4></div>
+
+  <section class="appx" id="a8">
+    <div class="kicker"><span class="sec-num">A8</span>Editorial today</div>
+    <h3>Three parallel curation efforts feed one corpus, no shared source of truth, no retirement workflow &mdash; drift accumulates.</h3>
+    <p class="lead">A 3,000-term shared vocabulary maintained by hand. Three parallel curated lists that overlap imperfectly. A per-send manual editorial layer on the sponsor side. No approval step, no retirement workflow.</p>
 
     <div class="arch-diagram">
       <svg viewBox="0 0 1040 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="edTitle edDesc" preserveAspectRatio="xMidYMid meet">
@@ -2502,8 +2356,8 @@
       </svg>
     </div>
 
-    <div class="point">
-      <strong class="point-head">Three governance lanes, no shared source of truth</strong>
+    <div class="method-block">
+      <div class="mb-head">Three governance lanes, no shared source of truth</div>
       <ul>
         <li>Editorial leadership maintains a curated 128-term subset (the My Topics list, the followable surface readers see).</li>
         <li>The editorial tagging lead applies tags per article from the broader 3,000-term shared vocabulary, every article, on publish.</li>
@@ -2512,38 +2366,39 @@
       </ul>
     </div>
 
-    <div class="point">
-      <strong class="point-head">Newsletter curation &mdash; explicit contrast</strong>
+    <div class="method-block">
+      <div class="mb-head">Newsletter curation &mdash; explicit contrast</div>
       <ul>
-        <li><strong>Personalized daily brief (My Topics Daily):</strong> 100% automated, no editorial curation per send. Sailthru matches content against each reader's accumulated tag-interest signal.</li>
+        <li><strong>Newsletter (My Topics Daily):</strong> 100% automated, no editorial curation per send. Sailthru matches content against each reader&rsquo;s accumulated tag-interest signal.</li>
         <li><strong>Topic Takeover sponsor sends:</strong> automated tag-filtered feed PLUS a manual layer &mdash; the Custom Content team picks 3&ndash;5 articles per recommendation slot, every send.</li>
-        <li>Same content corpus, two operating models. The marketing automation lead has flagged that nobody can fully explain why the manual layer exists or why Custom Content rather than marketing automation owns it.</li>
+        <li>Same content corpus, two operating models. Marketing automation has flagged that nobody can fully explain why the manual layer exists or why Custom Content rather than marketing automation owns it.</li>
       </ul>
     </div>
 
-    <div class="point">
-      <strong class="point-head">What hand-tagging costs &mdash; governance drift</strong>
+    <div class="method-block">
+      <div class="mb-head">What hand-tagging costs &mdash; governance drift</div>
       <ul>
         <li>The per-article time cost is modest (seconds to a minute). The compounding cost is governance drift.</li>
-        <li>44% of unique applied tags have been used exactly once &mdash; either one-off coinage that should have been merged, or accidental duplicates from inconsistent editor entry.</li>
+        <li>44% of unique applied tags have been used exactly once &mdash; one-off coinage that should have been merged, or accidental duplicates from inconsistent editor entry.</li>
         <li>184 of 505 terms across the three curated lists have zero load-bearing evidence &mdash; no engagement, no follows, no sponsor segment rules. Retireable by definition.</li>
         <li>Inconsistency across editors is unmeasured but likely material &mdash; no approval step, no reconciliation between editors covering similar content.</li>
       </ul>
     </div>
 
-    <div class="note"><strong>The long tail is the point.</strong> Niche topics with small followings are exactly what the product is for; this isn't an argument to shrink the vocabulary aggressively. It is an argument to govern it deliberately rather than letting it accumulate by default. See A4.2 for the future-state shape.</div>
+    <div class="callout-muted"><strong>The long tail is the point.</strong> Niche topics with small followings are exactly what the product is for; this isn&rsquo;t an argument to shrink the vocabulary aggressively. It is an argument to govern it deliberately rather than letting it accumulate by default. See <a href="#a9">A9</a> for the future-state shape.</div>
+
+    <p class="src">Sources: Drupal taxonomy + applied-tag export; Sailthru segment definitions; ad ops Topic Takeover term registry. Pulled 04/2026. Universe: GenomeWeb production tag corpus (3,000 terms; 505 curated; ~12,900 stated followers).</p>
   </section>
 
-  <!-- ============ A4.2 EDITORIAL + CLASSIFICATION — FUTURE STATE ============ -->
-  <section class="section-card cmp-slide future-state" id="a4-2-editorial-future">
-    <div class="kicker"><span class="sec-num">A4.2</span> Editorial &amp; classification &middot; future state <span class="future-tag">future state</span></div>
-    <h2 class="cmp-display-title">Editorial &amp; classification &mdash; classifier + governed vocabulary</h2>
-    <p class="cmp-deck">STAMP classifies on publish. Editor confirms or overrides edge cases. Editorial leadership shifts from per-article tagger to vocabulary governor. One vocabulary serves both reader personalization and sponsor matching.</p>
+  <section class="appx future" id="a9">
+    <div class="kicker"><span class="sec-num">A9</span>Editorial with STAMP</div>
+    <h3>Editorial governs the vocabulary, STAMP classifies on publish, and one source of truth feeds reader personalization and sponsor matching.</h3>
+    <p class="lead">STAMP classifies on publish. Editor confirms or overrides edge cases. Editorial leadership shifts from per-article tagger to vocabulary governor. One vocabulary serves both reader personalization and sponsor matching.</p>
 
-    <div class="arch-diagram">
+    <div class="arch-diagram future">
       <svg viewBox="0 0 1040 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="edFutTitle edFutDesc" preserveAspectRatio="xMidYMid meet">
         <title id="edFutTitle">Editorial and classification &mdash; future state</title>
-        <desc id="edFutDesc">Editorial leadership maintains a governed vocabulary. STAMP classifies every article against that vocabulary on publish. Editor confirms high-confidence classifications and overrides edge cases. The article page emits classifications as page key-values consumed by both Sailthru (personalized brief matching) and GAM (sponsor package matching). One source of truth for both jobs.</desc>
+        <desc id="edFutDesc">Editorial leadership maintains a governed vocabulary. STAMP classifies every article against that vocabulary on publish. Editor confirms high-confidence classifications and overrides edge cases. The article page emits classifications as page key-values consumed by both Sailthru (newsletter matching) and GAM (sponsor package matching). One source of truth for both jobs.</desc>
 
         <defs>
           <marker id="arr-fE" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto">
@@ -2619,7 +2474,7 @@
 
         <g>
           <rect class="arch-rect-out" x="280" y="370" width="350" height="80" rx="4"/>
-          <text class="arch-system arch-system-out" x="455" y="397" text-anchor="middle">Reader personalized brief</text>
+          <text class="arch-system arch-system-out" x="455" y="397" text-anchor="middle">Reader newsletter</text>
           <text class="arch-action arch-action-out" y="417" text-anchor="middle">
             <tspan x="455" dy="0">Matches reader profile (explicit + inferred)</tspan>
             <tspan x="455" dy="14">against STAMP-classified articles.</tspan>
@@ -2637,110 +2492,90 @@
       </svg>
     </div>
 
-    <div class="point">
-      <strong class="point-head">Editorial role shifts from tagger to governor</strong>
+    <div class="method-block">
+      <div class="mb-head">Editorial role shifts from tagger to governor</div>
       <ul>
         <li><strong>On publish.</strong> STAMP classifies; the editor confirms high-confidence classifications and overrides edge cases. Per-article time collapses.</li>
         <li><strong>Ongoing.</strong> Editorial leadership owns the governed vocabulary &mdash; adding new terms as the field evolves, retiring terms that lose load-bearing signal, reconciling alias and merge decisions.</li>
-        <li><strong>Classifier tuning.</strong> Editorial partners with engineering to adjust classifier weights and confidence thresholds as STAMP's behavior gets observed against the corpus. New territory.</li>
-        <li><strong>Package-level editorial ownership replaces ad-hoc per-campaign curation.</strong> Where editorial judgment genuinely adds value &mdash; defining what a package is and what it commits to &mdash; editorial owns it. Where it doesn't &mdash; per-send article picks &mdash; the manual layer retires.</li>
+        <li><strong>Classifier tuning.</strong> Editorial partners with engineering to adjust classifier weights and confidence thresholds as STAMP&rsquo;s behavior gets observed against the corpus. New territory.</li>
+        <li><strong>Package-level editorial ownership replaces ad-hoc per-campaign curation.</strong> Where editorial judgment genuinely adds value &mdash; defining what a package is and what it commits to &mdash; editorial owns it. Where it doesn&rsquo;t &mdash; per-send article picks &mdash; the manual layer retires.</li>
       </ul>
     </div>
 
-    <div class="point">
-      <strong class="point-head">One vocabulary, both jobs</strong>
+    <div class="method-block">
+      <div class="mb-head">One vocabulary, both jobs</div>
       <ul>
         <li>The governed vocabulary serves reader personalization and sponsor matching from the same source.</li>
-        <li>Ad ops' parallel curation for Topic Takeover targeting collapses into editorial's governed vocabulary.</li>
-        <li>Sponsor packages match against the same classifications the personalized brief reads from.</li>
+        <li>Ad ops&rsquo; parallel curation for Topic Takeover targeting collapses into editorial&rsquo;s governed vocabulary.</li>
+        <li>Sponsor packages match against the same classifications the newsletter reads from.</li>
       </ul>
     </div>
 
-    <div class="point">
-      <strong class="point-head">What this enables</strong>
+    <div class="method-block">
+      <div class="mb-head">What this enables</div>
       <ul>
         <li><strong>Consistency across editors.</strong> Two articles covering the same topic get classified the same way.</li>
         <li><strong>Vocabulary retirement as a native concept.</strong> Terms that lose signal drop out of the governed vocabulary. The 3,000-term drift inventory stops accumulating.</li>
-        <li><strong>The long tail is preserved deliberately.</strong> Niche topics aren't dropped to chase a number; they're retained because the product is for niche audiences. Governance is about earned signal, not size.</li>
+        <li><strong>The long tail is preserved deliberately.</strong> Niche topics aren&rsquo;t dropped to chase a number; they&rsquo;re retained because the product is for niche audiences. Governance is about earned signal, not size.</li>
         <li><strong>Cross-brand portability.</strong> Same classifier architecture applies to any Crain brand. Per-brand work is the editorial golden-set and vocabulary shape, not a rebuild.</li>
       </ul>
     </div>
 
-    <div class="point">
-      <strong class="point-head">Throughput economics</strong>
+    <div class="method-block">
+      <div class="mb-head">Throughput economics</div>
       <ul>
-        <li>At GenomeWeb's volume (~20&ndash;30 articles/day), direct LLM classification cost is sub-$1/day. Not budget-meaningful.</li>
+        <li>At GenomeWeb&rsquo;s volume (~20&ndash;30 articles/day), direct LLM classification cost is sub-$1/day. Not budget-meaningful.</li>
         <li>At 16-brand network scale (~300&ndash;500 articles/day), classification cost is ~$100&ndash;180K/year. Material but not blocking.</li>
         <li>Editorial labor recovered from hand-tagging offsets classification cost at both scales. Real constraint is classifier quality and governance discipline, not cost.</li>
       </ul>
     </div>
 
-    <div class="note"><strong>What's deliberately not numbered:</strong> the future-state vocabulary size is "governed," not "~300 terms" or any specific count. The shape gets defined by editorial governance once STAMP is observed against the corpus. See A4.3 for the open questions, including the company-name inclusion question that could move the working number.</div>
+    <div class="callout-muted"><strong>Deliberately not numbered.</strong> The future-state vocabulary size is "governed," not "~300 terms" or any specific count. The shape gets defined by editorial governance once STAMP is observed against the corpus. See <a href="#a10">A10</a> for the open questions, including the company-name inclusion question that could move the working number.</div>
+
+    <p class="src">Architecture reference. Throughput economics derived from internal STAMP cost modeling against current Crain article volumes. Pulled 04/2026.</p>
   </section>
 
-  <!-- ============ A4.3 EDITORIAL + CLASSIFICATION — OPEN QUESTIONS ============ -->
-  <section class="section-card" id="a4-3-editorial-questions">
-    <div class="kicker"><span class="sec-num">A4.3</span> Editorial &amp; classification &middot; open questions</div>
-    <h2>Open questions for the editorial workstream</h2>
-    <p class="section-deck">Each item is a question and, where applicable, a tentative direction. Several depend on observation periods after STAMP runs against the corpus.</p>
+  <section class="appx" id="a10">
+    <div class="kicker"><span class="sec-num">A10</span>Editorial open questions</div>
+    <h3>The editorial workstream&rsquo;s six open questions are governance cadence and STAMP-tuning calls; several need an observation period to settle.</h3>
+    <p class="lead">Each item is a question and, where applicable, a tentative direction. Several depend on observation periods after STAMP runs against the corpus.</p>
 
-    <div class="point">
-      <strong class="point-head">Confidence threshold for auto-pass vs editor review</strong>
-      <p class="point-prose">Open: where the cutoff lives between high-confidence pass-through and low-confidence editor override. Affects editorial workload and classification accuracy tradeoff. Needs an observation period post-cutover to tune.</p>
-    </div>
-
-    <div class="point">
-      <strong class="point-head">Vocabulary governance cadence</strong>
-      <p class="point-prose">Open: whether vocabulary review is quarterly, ad hoc as emerging terms surface, or continuous. Editorial leadership's call; an editorial-operations question.</p>
-    </div>
-
-    <div class="point">
-      <strong class="point-head">Entity tags vs topic tags governance</strong>
-      <p class="point-prose">STAMP's taxonomy can cover topics and entities (companies, products, people). Open: whether entity tagging follows the same governance pattern or needs a separate lane.</p>
-    </div>
-
-    <div class="point">
-      <strong class="point-head">Historical reclassification scope</strong>
-      <p class="point-prose">Open: whether STAMP re-runs over the pre-cutover article backlog or only tags new articles forward. Affects sponsor matching on legacy content and the personalized brief's recommendation quality during early days.</p>
-    </div>
-
-    <div class="point">
-      <strong class="point-head">Company names in the controlled vocabulary</strong>
-      <p class="point-prose">Editorial flagged that 50&ndash;100 company names sit on the boundary &mdash; they appear among the most-followed terms and the highest-engagement tags, and sponsor names are used as 100% share-of-voice terms today. Open: whether company names live in the governed vocabulary, in a separate entity lane, or both. Editorial leadership's call.</p>
-    </div>
-
-    <div class="point">
-      <strong class="point-head">Final vocabulary working number</strong>
-      <p class="point-prose">Tentative direction: "governed," not committed to a count. The current working hard floor is 272 load-bearing terms; the company-name decision and the ad-ops audit on which tags are live in GAM targeting could move the number meaningfully. Final shape lands once STAMP is observed against the corpus.</p>
-    </div>
-
+    <ul class="data-bullets">
+      <li><b>Confidence threshold for auto-pass vs editor review.</b> Open: where the cutoff lives between high-confidence pass-through and low-confidence editor override. Affects editorial workload and classification accuracy tradeoff. Needs an observation period post-cutover to tune.</li>
+      <li><b>Vocabulary governance cadence.</b> Open: whether vocabulary review is quarterly, ad hoc as emerging terms surface, or continuous. Editorial leadership&rsquo;s call; an editorial-operations question.</li>
+      <li><b>Entity tags vs topic tags governance.</b> STAMP&rsquo;s taxonomy can cover topics and entities (companies, products, people). Open: whether entity tagging follows the same governance pattern or needs a separate lane.</li>
+      <li><b>Historical reclassification scope.</b> Open: whether STAMP re-runs over the pre-cutover article backlog or only tags new articles forward. Affects sponsor matching on legacy content and newsletter recommendation quality during early days.</li>
+      <li><b>Company names in the controlled vocabulary.</b> Editorial flagged that 50&ndash;100 company names sit on the boundary &mdash; they appear among the most-followed terms and the highest-engagement tags, and sponsor names are used as 100% share-of-voice terms today. Open: whether company names live in the governed vocabulary, in a separate entity lane, or both. Editorial leadership&rsquo;s call.</li>
+      <li><b>Final vocabulary working number.</b> Tentative: "governed," not committed to a count. The current working hard floor is 272 load-bearing terms; the company-name decision and the ad-ops audit on which tags are live in GAM targeting could move the number meaningfully. Final shape lands once STAMP is observed against the corpus.</li>
+    </ul>
   </section>
 
   <footer class="endnote">
-    <div>GenomeWeb taxonomy &mdash; today and tomorrow</div>
+    <div>GenomeWeb taxonomy migration &mdash; same commitments, half the systems</div>
     <div>Prepared by Sean Bales &middot; Crain Communications &middot; 04/19/2026</div>
   </footer>
 
 </main>
 
 <script>
-  (function () {
-    var rail = document.querySelector('.progress-rail');
-    if (!rail) return;
-    var ticking = false;
-    function update() {
-      var h = document.documentElement;
-      var max = h.scrollHeight - h.clientHeight;
-      var p = max > 0 ? h.scrollTop / max : 0;
-      rail.style.setProperty('--p', p.toFixed(4));
-      ticking = false;
-    }
-    window.addEventListener('scroll', function () {
-      if (!ticking) { requestAnimationFrame(update); ticking = true; }
-    }, { passive: true });
-    window.addEventListener('resize', update);
-    update();
-  })();
+(function(){
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var rail = document.querySelector('.progress-rail');
+  if (!rail) return;
+  var ticking = false;
+  function update(){
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    var p = max > 0 ? h.scrollTop / max : 0;
+    rail.style.setProperty('--p', p.toFixed(4));
+    ticking = false;
+  }
+  window.addEventListener('scroll', function(){
+    if (!ticking) { requestAnimationFrame(update); ticking = true; }
+  }, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
 </script>
 
 </body>
